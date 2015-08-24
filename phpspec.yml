@@ -1,0 +1,5 @@
+suites:
+    main:
+        namespace: MKTests
+        psr4_prefix: MKTests
+        src_path: app

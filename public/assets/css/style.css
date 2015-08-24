@@ -1,0 +1,57 @@
+nav {
+    margin-bottom: 30px !important;
+}
+
+#exam-container {
+    margin-top: 20px;
+}
+
+div.login-container {
+    padding-top: 10px;
+    width: 25%;
+    margin: auto;
+}
+div.login-container .input-group-addon {
+    max-width: 84px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+div.login-container button {
+    width: 100%;
+}
+.full-width {
+    width: 100%;
+}
+.alert-box {
+    z-index: 100;
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 20px;
+    padding-top: 5px;
+    padding-bottom: 22px;
+    border-radius: 0px;
+    text-align: center;
+}
+nav .alert-box {
+    top: 50px;
+}
+.btn-file {
+    position: relative;
+    overflow: hidden;
+}
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
