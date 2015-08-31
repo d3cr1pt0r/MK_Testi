@@ -29,4 +29,10 @@ class Exam extends Model
 
     	return $questions;
     }
+
+    public function results()
+    {
+        return $this->hasMany('MKTests\Result', 'exam_id');
+    }
+
 }
