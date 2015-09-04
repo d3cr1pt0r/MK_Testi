@@ -15,7 +15,7 @@ class CreateQuestionTable extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('task_id')->unsigned();
-            $table->foreign('task_id')->references('id')->on('tasks');
+            $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
             $table->string('title');
             $table->string('image_src');
             $table->integer('type');
@@ -30,7 +30,6 @@ class CreateQuestionTable extends Migration
      */
     public function down()
     {
-        Schema::drop('questions_task_id_foreign');
         Schema::drop('questions');
     }
 }

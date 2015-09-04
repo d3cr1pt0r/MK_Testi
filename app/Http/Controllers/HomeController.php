@@ -3,7 +3,13 @@
 namespace MKTests\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use DB;
+use Redirect;
+use ExamHelper;
+use MKTests\Result;
+use MKTests\Exam;
+use MKTests\Question;
+use MKTests\QuestionAnswer;
 use MKTests\Http\Requests;
 use MKTests\Http\Controllers\Controller;
 
@@ -20,9 +26,82 @@ class HomeController extends Controller
         return "Home";
     }
 
-    public function getLogin()
+    public function getCode($uid)
     {
-        return "Login";
+        $results = Result::where('code', $uid)->get();
+        $exams = [];
+
+        foreach($results as $result) {
+            $exam = $result->exam;
+            $exam->used = $result->used;
+            $exam_results = ExamHelper::getExamResults($result);
+            $exams[] = ['exam' => $exam, 'results' => $exam_results];
+        }
+
+        $view = view('home.home');
+        $view->exams = $exams;
+        $view->code = $uid;
+
+        return $view;
+    }
+
+    public function getExam($id) {
+        $code = explode(':', base64_decode($id))[1];
+        $exam_id = explode(':', base64_decode($id))[0];
+
+        $result = Result::where('code', $code)->where('exam_id', $exam_id)->first();
+
+        if ($result != null) {
+            if (!$result->used) {
+                $exam = Exam::findOrFail($exam_id);
+
+                $view = view('home.exam');
+                $view->exam = $exam;
+                $view->id = $result->id;
+
+                return $view;
+            }
+            else {
+                return Redirect::to('code/'.$code)->with('response_status', ['success' => false, 'message' => 'You have already completed that exam!']);
+            }
+        }
+    }
+
+    ////////////////////////
+    //// AJAX FUNCTIONS ////
+    ////////////////////////
+
+    public function postEvaluate(Request $request) {
+        $result_id = $request->input('id');
+        $exam_objects = $request->input('exam_object');
+
+        $exam_objects = json_decode($exam_objects);
+
+        foreach($exam_objects as $exam_object) {
+            $task_id = $exam_object->task_id;
+            $questions = $exam_object->questions;
+
+            $result = Result::findOrFail($result_id);
+
+            foreach($questions as $q) {
+                $question_id = $q->question_id;
+                $question = Question::findOrFail($question_id);
+                $answers = $q->answers;
+
+                foreach($answers as $answer) {
+                    $question_answer = new QuestionAnswer;
+                    $question_answer->answer = $answer;
+                    $question_answer->result()->associate($result);
+                    $question_answer->question()->associate($question);
+                    $question_answer->save();
+                }
+            }
+
+            $result->used = true;
+            $result->save();
+        }
+
+        return json_encode(['status' => true, 'message' => 'Exam evaluated']);
     }
 
 }

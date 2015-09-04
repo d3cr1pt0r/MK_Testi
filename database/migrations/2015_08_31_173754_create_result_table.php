@@ -30,7 +30,6 @@ class CreateResultTable extends Migration
      */
     public function down()
     {
-        Schema::drop('results_exam_id_foreign');
         Schema::drop('results');
     }
 }

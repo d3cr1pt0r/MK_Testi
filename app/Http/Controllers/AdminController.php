@@ -13,6 +13,8 @@ use MKTests\Book;
 use MKTests\Task;
 use MKTests\Question;
 use MKTests\Answer;
+use MKTests\Result;
+use MKTests\QuestionAnswer;
 use MKTests\Http\Requests;
 use MKTests\Http\Controllers\Controller;
 
@@ -34,12 +36,20 @@ class AdminController extends Controller
         return $view;
     }
 
+    public function getTest() {
+        $exam = Exam::findOrFail(1);
+        $exam_copy = $exam->replicate();
+        $exam_copy->push();
+    }
+
     public function getExam($id)
     {
         $exam = Exam::findOrFail($id);
+        $results =$exam->results;
 
-        $view = view('home.exam');
+        $view = view('admin.exam');
         $view->exam = $exam;
+        $view->results = $results;
 
         return $view;
     }
@@ -68,6 +78,71 @@ class AdminController extends Controller
         return Redirect::to('admin/login')->with('response_status', ['success' => true, 'message' => 'Logged out']);
     }
 
+    public function getRemoveExam($id) {
+        $exam = Exam::findOrFail($id);
+        $exam_title = $exam->title;
+        $exam->delete();
+
+        return Redirect::to('admin')->with('response_status', ['success' => true, 'message' => $exam_title.' deleted!']);
+    }
+
+    public function getRemoveCode($id) {
+        $result = Result::findOrFail($id);
+        $result_code = $result->code;
+        $result->delete();
+
+        return Redirect::back()->with('response_status', ['success' => true, 'message' => $result_code.' deleted!']);
+    }
+
+    public function postGenerateCodesMulti(Request $request) {
+        $exam_ids = $request->input('exam_ids');
+        $num_codes = $request->input('num_codes');
+
+        for ($i=0;$i<$num_codes;$i++) {
+            $uid = $this->generateUID();
+
+            foreach($exam_ids as $exam_id) {
+                $exam = Exam::findOrFail($exam_id);
+
+                $result = new Result;
+                $result->code = $uid;
+                $result->used = false;
+                $result->exam()->associate($exam);
+                $result->save();
+            }
+        }
+    }
+
+    public function postGenerateCodes(Request $request) {
+        $exam_id = $request->input('exam_id');
+        $num_codes = $request->input('num_codes');
+
+        $exam = Exam::findOrFail($exam_id);
+
+        for ($i=0;$i<$num_codes;$i++) {
+            $uid = $this->generateUID();
+
+            $result = new Result;
+            $result->code = $uid;
+            $result->used = false;
+            $result->exam()->associate($exam);
+            $result->save();
+        }
+
+        return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Generated '.$num_codes.' codes!']);
+    }
+
+
+    private function generateUID() {
+        $uid = uniqid();
+        $exists = Result::where('code', $uid)->first();
+
+        if ($exists)
+            $this->generateUID();
+
+        return $uid;
+    }
+
     private function saveFile($file, $folder)
     {
         try {
@@ -86,18 +161,6 @@ class AdminController extends Controller
     ////////////////////////
     //// AJAX FUNCTIONS ////
     ////////////////////////
-
-    public function getAddExam()
-    {
-        $book = Book::findOrFail(1);
-
-        $exam = new Exam;
-        $exam->title = "hehe";
-        $exam->book()->associate($book);
-        $exam->save();
-
-        return "A";
-    }
 
     public function postAddExam(Request $request)
     {
@@ -160,7 +223,7 @@ class AdminController extends Controller
             }
         }
 
-        return "OK";
+        return json_encode(['status' => true, 'message' => 'Exam saved']);
     }
 
 }

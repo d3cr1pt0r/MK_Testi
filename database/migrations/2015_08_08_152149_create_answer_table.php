@@ -15,7 +15,7 @@ class CreateAnswerTable extends Migration
         Schema::create('answers', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('question_id')->unsigned();
-            $table->foreign('question_id')->references('id')->on('questions');
+            $table->foreign('question_id')->references('id')->on('questions')->onDelete('cascade');
             $table->string('title');
             $table->boolean('correct');
             $table->timestamps();
@@ -29,7 +29,6 @@ class CreateAnswerTable extends Migration
      */
     public function down()
     {
-        Schema::drop('answers_question_id_foreign');
         Schema::drop('answers');
     }
 }

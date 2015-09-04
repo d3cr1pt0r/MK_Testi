@@ -15,7 +15,7 @@ class CreateExamsTable extends Migration
         Schema::create('exams', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('book_id')->unsigned();
-            $table->foreign('book_id')->references('id')->on('books');
+            $table->foreign('book_id')->references('id')->on('books')->onDelete('cascade');
             $table->string('title');
             $table->integer('time_limit');
             $table->timestamps();
@@ -29,7 +29,6 @@ class CreateExamsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('exams_book_id_foreign');
         Schema::drop('exams');
     }
 }

@@ -55,3 +55,18 @@ nav .alert-box {
     cursor: inherit;
     display: block;
 }
+div .task {
+    padding: 10px;
+}
+
+div .task:last-child {
+    padding-bottom: 30px !important;
+}
+
+div .task:nth-child(2n+1) {
+    background-color: #FFFEF4;
+}
+
+div .task:nth-child(2n) {
+    background-color: #F4F9FF;
+}

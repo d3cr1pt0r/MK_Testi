@@ -48,19 +48,39 @@
         <button type="button" class="btn btn-success full-width" id="add-exam">Create Exam</button>
         <div id="exam-container"></div>
 
-        <table class="table table-condensed">
-            <th>Exam</th>
-            <th>Questions</th>
-            <th>Time limit</th>
+        <form class="form-group" action="{{ url('admin/generate-codes-multi/')  }}" method="post">
+            {!! csrf_field() !!}
+            <table class="table table-condensed" style="margin-top: 60px">
+                <th>Exam</th>
+                <th>Questions</th>
+                <th>Time limit</th>
+                <th>Action</th>
+                <th><input type="checkbox" value=""></th>
 
-            @foreach($exams as $exam)
-                <tr>
-                    <td><a href="{{ url('admin/exam/'.$exam->id)  }}">{{ $exam->title }}</a></td>
-                    <td>{{ count($exam->questions()) }}</td>
-                    <td>None</td>
-                </tr>
-            @endforeach
-        </table>
+                @foreach($exams as $exam)
+                    <tr>
+                        <td><a href="{{ url('admin/exam/'.$exam->id)  }}">{{ $exam->title }}</a></td>
+                        <td>{{ count($exam->questions()) }}</td>
+                        <td>None</td>
+                        <td>
+                            <a href="{{ url('admin/remove-exam/'.$exam->id)  }}">Delete</a>
+                        </td>
+                        <td><input type="checkbox" name="exam_ids[]" value="{{ $exam->id  }}"></td>
+                    </tr>
+                @endforeach
+            </table>
+
+            <div class="well" style="margin-top: 20px;">
+                <div class="form-group" style="float: left; width: 90%;">
+                    <div class="input-group">
+                        <div class="input-group-addon">Number of codes</div>
+                        <input type="text" class="form-control" name="num_codes">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="float: right; width: 8%;">Generate</button>
+                <div style="clear: both;"></div>
+            </div>
+        </form>
     </div>
 
 
@@ -262,7 +282,10 @@
         }
 
         function completeHandler(data) {
-            console.log(data);
+            status = JSON.parse(data)['status'];
+            if (status) {
+                location.reload();
+            }
         }
 
         function errorHandler() {

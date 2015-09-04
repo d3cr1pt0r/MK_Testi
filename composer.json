@@ -20,7 +20,10 @@
         ],
         "psr-4": {
             "MKTests\\": "app/"
-        }
+        },
+        "files": [
+            "app/Helpers/ExamHelper.php"
+        ]
     },
     "autoload-dev": {
         "classmap": [

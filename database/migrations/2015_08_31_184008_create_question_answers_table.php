@@ -30,8 +30,8 @@ class CreateQuestionAnswersTable extends Migration
      */
     public function down()
     {
-        Schema::drop('question_answers_result_id_foreign');
-        Schema::drop('question_answers_question_id_foreign');
+        //Schema::drop('question_answers_result_id_foreign');
+        //Schema::drop('question_answers_question_id_foreign');
         Schema::drop('question_answers');
     }
 }

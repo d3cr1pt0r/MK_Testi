@@ -29,6 +29,6 @@ class QuestionAnswer extends Model
 
         # calculate percentage of correct answers*
         # return all fields with *
-    }1
+    }
 
 }

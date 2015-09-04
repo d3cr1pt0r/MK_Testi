@@ -15,7 +15,7 @@ class CreateTaskTable extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('exam_id')->unsigned();
-            $table->foreign('exam_id')->references('id')->on('exams');
+            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
             $table->string('title');
             $table->timestamps();
         });
@@ -28,7 +28,6 @@ class CreateTaskTable extends Migration
      */
     public function down()
     {
-        Schema::drop('questions_exam_id_foreign');
         Schema::drop('questions');
     }
 }
