@@ -74,6 +74,10 @@ class HomeController extends Controller
                 $view->review = true;
                 $view->results = ExamHelper::getExamResults($result);
 
+                $submitted_answers = $result->question_answers()->count();
+
+                if ($submitted_answers == 0)
+                    return Redirect::back()->with('response_status', ['success' => false, 'message' => 'It looks like the exam was submitted without any questions answered.']);
                 return $view->with('response_status', ['success' => false, 'message' => 'You have already completed that exam!']);
                 //return Redirect::to('code/'.$code)->with('response_status', ['success' => false, 'message' => 'You have already completed that exam!']);
             }
