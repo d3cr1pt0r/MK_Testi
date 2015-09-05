@@ -58,6 +58,7 @@ class HomeController extends Controller
                 $view = view('home.exam');
                 $view->exam = $exam;
                 $view->id = $result->id;
+                $view->review = false;
 
                 $result->used = true;
                 $result->save();
@@ -65,19 +66,24 @@ class HomeController extends Controller
                 return $view;
             }
             else {
-                return Redirect::to('code/'.$code)->with('response_status', ['success' => false, 'message' => 'You have already completed that exam!']);
+                $exam = Exam::findOrFail($exam_id);
+
+                $view = view('home.exam-review');
+                $view->exam = $exam;
+                $view->id = $result->id;
+                $view->review = true;
+                $view->results = ExamHelper::getExamResults($result);
+
+                return $view->with('response_status', ['success' => false, 'message' => 'You have already completed that exam!']);
+                //return Redirect::to('code/'.$code)->with('response_status', ['success' => false, 'message' => 'You have already completed that exam!']);
             }
         }
     }
 
-    ////////////////////////
-    //// AJAX FUNCTIONS ////
-    ////////////////////////
-
-    # TODO: Check if this function can be abused in any way !!!
     public function postEvaluate(Request $request) {
         $result_id = $request->input('id');
         $exam_objects = $request->input('exam_object');
+        $result = null;
 
         $exam_objects = json_decode($exam_objects);
 
@@ -105,7 +111,7 @@ class HomeController extends Controller
             $result->save();
         }
 
-        return json_encode(['status' => true, 'message' => 'Exam evaluated']);
+        return Redirect::to('code/'.$result->code)->with('response_status', ['success' => true, 'message' => 'Exam evaluated!']);
     }
 
 }

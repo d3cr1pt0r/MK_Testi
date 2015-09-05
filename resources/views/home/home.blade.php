@@ -15,7 +15,7 @@
                 <td><a href="{{ url('/exam/'.base64_encode($exam['exam']->id.':'.$code))  }}">{{ $exam['exam']->title }}</a></td>
                 <td>{{ count($exam['exam']->questions()) }}</td>
                 <td>None</td>
-                <td>{{ $exam['exam']->used ? "Completed" : "Open" }} {{ $exam['results']['score'] }}</td>
+                <td style="color: {{ $exam['results']['score'] < 50 ? $exam['exam']->used ? 'red' : 'green' : 'green' }}">{{ $exam['exam']->used ? number_format($exam['results']['score'], 1).'%' : "Open" }}</td>
             </tr>
         @endforeach
     </table>

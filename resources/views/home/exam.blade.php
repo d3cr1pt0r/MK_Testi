@@ -1,7 +1,6 @@
 @extends('admin.parts.master')
 
 @section('content')
-
 <div class="container">
 
 	@include('admin.parts.messages')
@@ -15,6 +14,7 @@
 		</div>
 		<div class="panel-body" style="padding: 0px;">
 			<?php $i=0 ?>
+			<?php $q=0 ?>
 			@foreach($exam->tasks as $task)
 				<?php $i++ ?>
 				<div class="task">
@@ -49,7 +49,12 @@
 					</div>
 				</div>
 			@endforeach
-			<button type="submit" id="done" class="btn btn-primary" style="width: 100%;">DONE</button>
+			<form action="{{ url('evaluate') }}" method="post" id="submit-exam">
+				{!! csrf_field() !!}
+				<input type="hidden" name="exam_object" value="" id="exam_object_input">
+				<input type="hidden" name="id" value="" id="id_input">
+				<button id="done" class="btn btn-primary" style="width: 100%;">DONE</button>
+			</form>
 		</div>
 	</div>
 </div>
@@ -84,9 +89,13 @@
 			});
 		});
 
-		$.post( "{{ url('evaluate') }}", { exam_object: JSON.stringify(exam_object), id: "{{ $id }}", _token: "{{ csrf_token() }}" }).done(function( data ) {
-			console.log(data);
-		});
+		$("#id_input").val("{{ $id }}");
+		$("#exam_object_input").val(JSON.stringify(exam_object));
+		$("#submit-exam").submit();
+
+		{{--$.post( "{{ url('evaluate') }}", { exam_object: JSON.stringify(exam_object), id: "{{ $id }}", _token: "{{ csrf_token() }}" }).done(function( data ) {--}}
+			{{--console.log(data);--}}
+		{{--});--}}
 
 	});
 </script>

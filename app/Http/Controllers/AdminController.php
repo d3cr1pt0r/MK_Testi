@@ -78,6 +78,11 @@ class AdminController extends Controller
         return Redirect::back()->with('response_status', ['success' => true, 'message' => $code.' deleted!']);
     }
 
+    public function getResetCode($id) {
+        $code = ExamHelper::resetCode($id);
+        return Redirect::back()->with('response_status', ['success' => true, 'message' => $code.' was reset!']);
+    }
+
     public function postGenerateCodesMulti(Request $request) {
         $exam_ids = $request->input('exam_ids');
         $num_codes = $request->input('num_codes');

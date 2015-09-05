@@ -17,4 +17,13 @@ class Question extends Model
     {
     	return $this->hasMany('MKTests\Answer', 'question_id');
     }
+
+    public function answers_arr()
+    {
+        $answers = [];
+        foreach($this->answers as $answer) {
+            $answers[] = $answer->title;
+        }
+        return $answers;
+    }
 }

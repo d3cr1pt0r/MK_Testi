@@ -75,6 +75,15 @@ class ExamHelper
         return $result_code;
     }
 
+    static public function resetCode($id) {
+        $result = Result::findOrFail($id);
+        $result->used = false;
+        $result->question_answers()->delete();
+        $result->save();
+
+        return $result->code;
+    }
+
     static public function generateUID() {
         $uid = uniqid();
         $exists = Result::where('code', $uid)->first();
@@ -105,32 +114,42 @@ class ExamHelper
         $score_total = 0;
         $questions_total = count($result->exam->questions());
 
+        $question_group = [];
+
         foreach($result->question_answers as $qa) {
-            $question = $qa->question;
-            $answers = $question->answers;
-            $answers_total = count($answers);
+            $question_id = $qa->question->id;
+            $question_group[$question_id][] = $qa;
+        }
+
+        foreach($question_group as $question_id=>$question) {
+            $answers_total = Question::find($question_id)->answers()->count();
+            $answers_correct = Question::find($question_id)->answers()->where('correct', true)->count();
+            $answers_submitted = $result->question_answers()->where('question_id', $question_id)->count();
             $answers_submitted_correct = 0;
 
-            # get all submitted answers
-            $answers_submitted = $result->question_answers()->where('question_id', $question->id)->count();
+            $all_answers = [];
+            foreach (Question::find($question_id)->answers as $answer)
+                if ($answer->correct)
+                    $all_answers[] = $answer->title;
 
-            # get all submitted correct answers
-            $answers_correct = $qa->question->answers()->where('correct', true)->count();
-
-            foreach($answers as $answer) {
-                if ($qa->answer == $answer->title) {
+            $answers_submitted_arr = [];
+            foreach($question as $answer) {
+                $answers_submitted_arr[] = $answer->answer;
+                if (in_array($answer->answer, $all_answers))
                     $answers_submitted_correct++;
-                }
             }
 
-            if ($answers_submitted == 0)
+            $answers_submitted_wrong = $answers_submitted - $answers_submitted_correct;
+            $r = $answers_submitted_correct - $answers_submitted_wrong;
+
+            if ($answers_submitted == 0 || ($answers_submitted_correct - $answers_submitted_wrong) <= 0)
                 $score = 0;
             else
-                $score = ($answers_correct / $answers_submitted) * ($answers_submitted_correct/$answers_submitted);
+                $score = $r / $answers_correct;
 
-                $score_total += $score;
+            $score_total += $score;
 
-            $results[] = ['answers_total' => $answers_total, 'answers_submitted' => $answers_submitted, 'answers_submitted_correct' => $answers_submitted_correct, 'answers_correct' => $answers_correct, 'question' => $question];
+            $results[$question_id] = ['answers_total' => $answers_total, 'answers_submitted' => $answers_submitted, 'answers_submitted_correct' => $answers_submitted_correct, 'answers_correct' => $answers_correct, 'score' => $score, 'question' => $question];
         }
 
         if ($questions_total == 0)
