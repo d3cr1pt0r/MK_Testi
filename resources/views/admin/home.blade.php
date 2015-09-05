@@ -146,7 +146,7 @@
                 </div>
                 <div class="col-md-2" style="padding-right: 0;">
                     <a href="#!" style="color: #DC5353;"><span class="glyphicon glyphicon-remove remove-answer" aria-hidden="true" style="float: right; display: block; padding-left: 14px; line-height: 33px;"></span></a>
-                    <span class="glyphicon glyphicon-question-sign answer-state correct" id="answer_state" style="float: right; font-size: 18px; color: #43B743; line-height: 33px; cursor: pointer;"></span>
+                    <span class="glyphicon glyphicon-question-sign answer-state correct" id="answer_state" style="float: right; font-size: 18px; color: #43B743; line-height: 33px; cursor: pointer;" correct></span>
                 </div>
             </div>
         </div>

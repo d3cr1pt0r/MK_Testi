@@ -2,6 +2,8 @@
 
 namespace MKTests;
 
+use ExamHelper;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Result extends Model
@@ -17,6 +19,11 @@ class Result extends Model
     public function question_answers()
     {
         return $this->hasMany('MKTests\QuestionAnswer', 'result_id');
+    }
+
+    public function getResults()
+    {
+        return ExamHelper::getExamResults($this);
     }
 
 }

@@ -21,7 +21,8 @@
 		</form>
 
 		@foreach($exam->results as $result)
-			<span style="float: left; width: 100px; color: {{ $result->used ? 'red' : 'green' }}">{{ $result->code }}</span>
+			<span style="float: left; width: 100px; color: {{ $result->used ? $result->getResults()['score'] < 50 ? 'red' : 'green' : 'blue' }}">{{ $result->code }}</span>
+			<span style="float: left; width: 100px; color: {{ $result->used ? $result->getResults()['score'] < 50 ? 'red' : 'green' : 'blue' }}">{{ number_format($result->getResults()['score'], 1).'%' }}</span>
 			<a href="{{ url('admin/remove-code/'.$result->id)  }}" style="float: left; margin-left: 5px;">Remove</a>
 			<div style="clear: left;"></div>
 		@endforeach
