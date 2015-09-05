@@ -52,9 +52,9 @@ class HomeController extends Controller
         $result = Result::where('code', $code)->where('exam_id', $exam_id)->first();
 
         if ($result != null) {
-            if (!$result->used) {
-                $exam = Exam::findOrFail($exam_id);
+            $exam = Exam::findOrFail($exam_id);
 
+            if (!$result->used) {
                 $view = view('home.exam');
                 $view->exam = $exam;
                 $view->id = $result->id;
@@ -66,11 +66,10 @@ class HomeController extends Controller
                 return $view;
             }
             else {
-                $exam = Exam::findOrFail($exam_id);
-
                 $view = view('home.exam-review');
                 $view->exam = $exam;
                 $view->id = $result->id;
+                $view->code = $code;
                 $view->review = true;
                 $view->results = ExamHelper::getExamResults($result);
 
@@ -79,7 +78,6 @@ class HomeController extends Controller
                 if ($submitted_answers == 0)
                     return Redirect::back()->with('response_status', ['success' => false, 'message' => 'It looks like the exam was submitted without any questions answered.']);
                 return $view->with('response_status', ['success' => false, 'message' => 'You have already completed that exam!']);
-                //return Redirect::to('code/'.$code)->with('response_status', ['success' => false, 'message' => 'You have already completed that exam!']);
             }
         }
     }

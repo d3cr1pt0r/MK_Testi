@@ -5,6 +5,8 @@
 
         @include('admin.parts.messages')
 
+        <a href="{{ url('code/'.$code) }}" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Back to exams</a>
+
         <div class="panel panel-default" style="margin-top: 20px;">
             <div class="panel-heading">
                 <span style="display: block; float: left; font-size: 22px;">{{ $exam->title }} <span style="font-size: 13px; color: {{ $results['score'] < 50 ? 'red' : 'green' }}">[{{ number_format($results['score'], 1).'%' }}]</span></span>
