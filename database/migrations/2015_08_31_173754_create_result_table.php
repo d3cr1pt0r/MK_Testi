@@ -18,7 +18,7 @@ class CreateResultTable extends Migration
             $table->string('code', 10);
             $table->boolean('used');
             $table->integer('exam_id')->unsigned();
-            $table->foreign('exam_id')->references('id')->on('exams');
+            $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
             $table->timestamps();
         });
     }

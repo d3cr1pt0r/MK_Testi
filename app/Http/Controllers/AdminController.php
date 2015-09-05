@@ -8,13 +8,9 @@ use Illuminate\Support\Facades\View;
 use URL;
 use Auth;
 use Redirect;
+use ExamHelper;
 use MKTests\Exam;
-use MKTests\Book;
-use MKTests\Task;
-use MKTests\Question;
-use MKTests\Answer;
 use MKTests\Result;
-use MKTests\QuestionAnswer;
 use MKTests\Http\Requests;
 use MKTests\Http\Controllers\Controller;
 
@@ -34,12 +30,6 @@ class AdminController extends Controller
         $view->exams = $exams;
 
         return $view;
-    }
-
-    public function getTest() {
-        $exam = Exam::findOrFail(1);
-        $exam_copy = $exam->replicate();
-        $exam_copy->push();
     }
 
     public function getExam($id)
@@ -79,19 +69,13 @@ class AdminController extends Controller
     }
 
     public function getRemoveExam($id) {
-        $exam = Exam::findOrFail($id);
-        $exam_title = $exam->title;
-        $exam->delete();
-
+        $exam_title = ExamHelper::removeExam($id);
         return Redirect::to('admin')->with('response_status', ['success' => true, 'message' => $exam_title.' deleted!']);
     }
 
     public function getRemoveCode($id) {
-        $result = Result::findOrFail($id);
-        $result_code = $result->code;
-        $result->delete();
-
-        return Redirect::back()->with('response_status', ['success' => true, 'message' => $result_code.' deleted!']);
+        $code = ExamHelper::removeCode($id);
+        return Redirect::back()->with('response_status', ['success' => true, 'message' => $code.' deleted!']);
     }
 
     public function postGenerateCodesMulti(Request $request) {
@@ -99,18 +83,15 @@ class AdminController extends Controller
         $num_codes = $request->input('num_codes');
 
         for ($i=0;$i<$num_codes;$i++) {
-            $uid = $this->generateUID();
+            $uid = ExamHelper::generateUID();
 
             foreach($exam_ids as $exam_id) {
                 $exam = Exam::findOrFail($exam_id);
-
-                $result = new Result;
-                $result->code = $uid;
-                $result->used = false;
-                $result->exam()->associate($exam);
-                $result->save();
+                ExamHelper::createResult($exam, $uid, false);
             }
         }
+
+        return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Generated '.$num_codes.' codes for '.count($exam_ids).' exams!']);
     }
 
     public function postGenerateCodes(Request $request) {
@@ -120,42 +101,11 @@ class AdminController extends Controller
         $exam = Exam::findOrFail($exam_id);
 
         for ($i=0;$i<$num_codes;$i++) {
-            $uid = $this->generateUID();
-
-            $result = new Result;
-            $result->code = $uid;
-            $result->used = false;
-            $result->exam()->associate($exam);
-            $result->save();
+            $uid = ExamHelper::generateUID();
+            ExamHelper::createResult($exam, $uid, false);
         }
 
         return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Generated '.$num_codes.' codes!']);
-    }
-
-
-    private function generateUID() {
-        $uid = uniqid();
-        $exists = Result::where('code', $uid)->first();
-
-        if ($exists)
-            $this->generateUID();
-
-        return $uid;
-    }
-
-    private function saveFile($file, $folder)
-    {
-        try {
-            $file_ext = ".".$file->guessExtension();
-            $base_path = base_path();
-            $sub_path = "/public/".$folder;
-            $path = $base_path.$sub_path;
-            $destination_name = uniqid().$file_ext;
-            $file->move($path, $destination_name);
-            return ["relative_path" => $folder, "absolute_path" => $path, "file_name" => $destination_name];
-        } catch (Exception $e) {
-            return false;
-        }
     }
 
     ////////////////////////
@@ -164,65 +114,7 @@ class AdminController extends Controller
 
     public function postAddExam(Request $request)
     {
-        $book = Book::findOrFail(1);
-
-        $exam_object = $request->input('exam_data');
-        $exam_object = json_decode($exam_object);
-
-        $exam_title = $exam_object->exam_title;
-        $exam_tasks = $exam_object->exam_tasks;
-
-        $images_found = 0;
-
-        $exam = new Exam;
-        $exam->title = $exam_title;
-        $exam->book()->associate($book);
-        $exam->save();
-
-        foreach ($exam_tasks as $k=>$t) {
-            $task_title = $t->task_title;
-            $questions = $t->questions;
-
-            $task = new Task;
-            $task->title = $task_title;
-            $task->exam()->associate($exam);
-            $task->save();
-
-            foreach($questions as $k=>$q) {
-                $question_title = $q->question_title;
-                $question_has_image = $q->question_has_image;
-                $question_type = intval($q->question_type);
-                $answers = $q->answers;
-
-                $question = new Question;
-                $question->title = $question_title;
-                $question->type = $question_type;
-                $question->task()->associate($task);
-
-                if ($question_has_image) {
-                    $image_file = $request->file()['images'][$images_found];
-                    $image_src = $this->saveFile($image_file, "/assets/uploads/");
-                    if ($image_src != false) {
-                        $question->image_src = $image_src["relative_path"].$image_src["file_name"];
-                    }
-                    $images_found++;
-                }
-
-                $question->save();
-
-                foreach ($answers as $k=>$a) {
-                    $answer_title = $a->answer_title;
-                    $answer_correct = $a->correct;
-
-                    $answer = new Answer;
-                    $answer->title = $answer_title;
-                    $answer->correct = $answer_correct;
-                    $answer->question()->associate($question);
-                    $answer->save();
-                }
-            }
-        }
-
+        ExamHelper::addExam($request);
         return json_encode(['status' => true, 'message' => 'Exam saved']);
     }
 

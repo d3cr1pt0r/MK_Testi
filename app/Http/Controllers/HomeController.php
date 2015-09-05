@@ -59,6 +59,9 @@ class HomeController extends Controller
                 $view->exam = $exam;
                 $view->id = $result->id;
 
+                $result->used = true;
+                $result->save();
+
                 return $view;
             }
             else {
@@ -71,6 +74,7 @@ class HomeController extends Controller
     //// AJAX FUNCTIONS ////
     ////////////////////////
 
+    # TODO: Check if this function can be abused in any way !!!
     public function postEvaluate(Request $request) {
         $result_id = $request->input('id');
         $exam_objects = $request->input('exam_object');
