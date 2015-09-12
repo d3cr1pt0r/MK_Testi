@@ -109,7 +109,6 @@ class ExamHelper
         }
     }
 
-    # TODO: doesn't work with enter type questions if there are more than 1 correct answers
     static public function getExamResults($result) {
         $results = [];
         $score_total = 0;
@@ -124,8 +123,8 @@ class ExamHelper
 
         foreach($question_group as $question_id=>$question) {
             $q = Question::find($question_id);
-            $answers_total = Question::find($question_id)->answers()->count();
-            $answers_correct = Question::find($question_id)->answers()->where('correct', true)->count();
+            $answers_total = $q->answers()->count();
+            $answers_correct = $q->answers()->where('correct', true)->count();
             $answers_submitted = $result->question_answers()->where('question_id', $question_id)->count();
             $answers_submitted_correct = 0;
 
@@ -139,13 +138,13 @@ class ExamHelper
                 $answers_submitted_arr[] = $answer->answer;
                 if (in_array($answer->answer, $all_answers))
                     $answers_submitted_correct++;
-                    if ($q->type == 1) {
-                        $answers_submitted_correct = $answers_correct;
-                        break;
-                    }
             }
 
             $answers_submitted_wrong = $answers_submitted - $answers_submitted_correct;
+
+            if ($q->type == 1)
+                $answers_correct = 1;
+
             $r = $answers_submitted_correct - $answers_submitted_wrong;
 
             if ($answers_submitted == 0 || ($answers_submitted_correct - $answers_submitted_wrong) <= 0)

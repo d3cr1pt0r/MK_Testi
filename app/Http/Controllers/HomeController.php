@@ -23,7 +23,8 @@ class HomeController extends Controller
 
     public function getIndex()
     {
-        return "Home";
+        $view = view('home.home');
+        return $view;
     }
 
     public function getCode($uid)
@@ -38,7 +39,7 @@ class HomeController extends Controller
             $exams[] = ['exam' => $exam, 'results' => $exam_results];
         }
 
-        $view = view('home.home');
+        $view = view('home.exams');
         $view->exams = $exams;
         $view->code = $uid;
 
