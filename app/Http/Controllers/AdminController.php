@@ -10,7 +10,8 @@ use Auth;
 use Redirect;
 use ExamHelper;
 use MKTests\Exam;
-use MKTests\Result;
+use MKTests\Book;
+use MKTests\Category;
 use MKTests\Http\Requests;
 use MKTests\Http\Controllers\Controller;
 
@@ -25,9 +26,13 @@ class AdminController extends Controller
     public function getIndex()
     {
         $exams = Exam::all();
+        $books = Book::all();
+        $categories = Category::all();
 
         $view = view('admin.home');
         $view->exams = $exams;
+        $view->books = $books;
+        $view->categories = $categories;
 
         return $view;
     }
@@ -81,6 +86,24 @@ class AdminController extends Controller
     public function getResetCode($id) {
         $code = ExamHelper::resetCode($id);
         return Redirect::back()->with('response_status', ['success' => true, 'message' => $code.' was reset!']);
+    }
+
+    public function postAddBook(Request $request) {
+        $title = $request->input('book-name');
+        $book = ExamHelper::createBook($title);
+
+        if($book)
+            return Redirect::back()->with('response_status', ['success' => true, 'message' => $book->title.' added!']);
+        return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Failed to add new book!']);
+    }
+
+    public function postAddCategory(Request $request) {
+        $title = $request->input('category-name');
+        $category = ExamHelper::createCategory($title);
+
+        if($category)
+            return Redirect::back()->with('response_status', ['success' => true, 'message' => $category->title.' added!']);
+        return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Failed to add new book!']);
     }
 
     public function postGenerateCodesMulti(Request $request) {

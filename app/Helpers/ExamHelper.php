@@ -6,6 +6,7 @@ use MKTests\Task;
 use MKTests\Question;
 use MKTests\Answer;
 use MKTests\Result;
+use MKTests\Category;
 
 class ExamHelper
 {
@@ -20,10 +21,27 @@ class ExamHelper
         return $result;
     }
 
-    static public function createExam($book, $title) {
+    static public function createBook($title) {
+        $book = new Book;
+        $book->title = $title;
+        $book->save();
+
+        return $book;
+    }
+
+    static public function createCategory($title) {
+        $category = new Category;
+        $category->title = $title;
+        $category->save();
+
+        return $category;
+    }
+
+    static public function createExam($book, $category, $title) {
         $exam = new Exam;
         $exam->title = $title;
         $exam->book()->associate($book);
+        $exam->category()->associate($category);
         $exam->save();
 
         return $exam;
@@ -164,15 +182,16 @@ class ExamHelper
 
     static public function addExam($request)
     {
-        $book = Book::findOrFail(1);
-
         $exam_object = $request->input('exam_data');
         $exam_object = json_decode($exam_object);
+
+        $book_id = $exam_object->book_id;
+        $category_id = $exam_object->category_id;
 
         $exam_title = $exam_object->exam_title;
         $exam_tasks = $exam_object->exam_tasks;
 
-        $exam = ExamHelper::createExam($book, $exam_title);
+        $exam = ExamHelper::createExam(Book::findOrFail($book_id), Category::findOrFail($category_id), $exam_title);
 
         foreach ($exam_tasks as $k=>$t) {
             $task_title = $t->task_title;

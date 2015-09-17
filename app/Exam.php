@@ -13,6 +13,11 @@ class Exam extends Model
         return $this->belongsTo('MKTests\Book', 'book_id');
     }
 
+    public function category()
+    {
+        return $this->belongsTo('MKTests\Category', 'category_id');
+    }
+
     public function tasks()
     {
     	return $this->hasMany('MKTests\Task', 'exam_id');

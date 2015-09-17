@@ -8,7 +8,6 @@
             <h1>Administration <small>- login</small></h1>
         </div>
 
-        {{Auth::user()}}
         <div class="login-container">
             <form class="form-group" action="" method="post">
                 {!! csrf_field() !!}

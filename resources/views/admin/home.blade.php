@@ -45,16 +45,40 @@
 
     <!-- Main content -->
     <div class="container">
-        <button type="button" class="btn btn-success full-width" id="add-exam">Create Exam</button>
+        <div class="well">
+            <form action="{{ url('admin/add-book') }}" method="post">
+                {!! csrf_field() !!}
+                <div class="form-group">
+                    <div class="input-group" style="float: left; width: 90%;">
+                        <div class="input-group-addon" style="width: 130px;">Naslov knjige</div>
+                        <input type="text" class="form-control" name="book-name">
+                    </div>
+                    <button type="submit" class="btn btn-success" id="add-book" style="float:right;">Dodaj</button>
+                </div>
+            </form>
+            <div style="clear: both; padding: 5px;"></div>
+            <form action="{{ url('admin/add-category') }}" method="post">
+                {!! csrf_field() !!}
+                <div class="form-group">
+                    <div class="input-group" style="float: left; width: 90%;">
+                        <div class="input-group-addon" style="max-width: 130px;">Naslov kategorije</div>
+                        <input type="text" class="form-control" name="category-name">
+                    </div>
+                    <button type="submit" class="btn btn-success" id="add-category" style="float: right;">Dodaj</button>
+                </div>
+            </form>
+            <div style="clear: both; padding: 5px;"></div>
+        </div>
+        <button type="button" class="btn btn-success full-width" id="add-exam">Dodaj test</button>
         <div id="exam-container"></div>
 
         <form class="form-group" action="{{ url('admin/generate-codes-multi/')  }}" method="post">
             {!! csrf_field() !!}
             <table class="table table-condensed" style="margin-top: 60px">
-                <th>Exam</th>
-                <th>Questions</th>
-                <th>Time limit</th>
-                <th>Action</th>
+                <th>Test</th>
+                <th>St. vprasanj</th>
+                <th>Casovna omejitev</th>
+                <th>#</th>
                 <th><input type="checkbox" value=""></th>
 
                 @foreach($exams as $exam)
@@ -63,7 +87,7 @@
                         <td>{{ count($exam->questions()) }}</td>
                         <td>None</td>
                         <td>
-                            <a href="{{ url('admin/remove-exam/'.$exam->id)  }}">Delete</a>
+                            <a href="{{ url('admin/remove-exam/'.$exam->id)  }}">Izbrisi</a>
                         </td>
                         <td><input type="checkbox" name="exam_ids[]" value="{{ $exam->id  }}"></td>
                     </tr>
@@ -73,11 +97,11 @@
             <div class="well" style="margin-top: 20px;">
                 <div class="form-group" style="float: left; width: 90%;">
                     <div class="input-group">
-                        <div class="input-group-addon">Number of codes</div>
+                        <div class="input-group-addon">Vnesi stevilo sifer</div>
                         <input type="text" class="form-control" name="num_codes">
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="float: right; width: 8%;">Generate</button>
+                <button type="submit" class="btn btn-primary" style="float: right; width: 8%;">Zgeneriraj</button>
                 <div style="clear: both;"></div>
             </div>
         </form>
@@ -90,7 +114,19 @@
     <script type="text/html" id="exam-panel">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <input type="text" class="form-control" id="exam-title" style="width: 300px; float: left;" placeholder="Exam title">
+                <input type="text" class="form-control" id="exam-title" style="width: 300px; float: left;" placeholder="Naslov testa">
+                <p style="float: left; line-height: 33px; padding-left: 10px; padding-right: 4px;">Knjiga: </p>
+                <select type="text" class="form-control" id="book-id" style="width: 200px; float: left;" placeholder="Naslov testa">
+                    @foreach($books as $book)
+                        <option value="{{ $book->id }}">{{ $book->title }}</option>
+                    @endforeach
+                </select>
+                <p style="float: left; line-height: 33px; padding-left: 10px; padding-right: 4px;">Kategorija: </p>
+                <select type="text" class="form-control" id="category-id" style="width: 200px; float: left;" placeholder="Naslov testa">
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->title }}</option>
+                    @endforeach
+                </select>
                 <span class="glyphicon glyphicon-plus-sign add-question" id="add-task" style="float: right; font-size: 18px; color: royalblue; line-height: 33px; cursor: pointer;"></span>
                 <div style="clear: both;"></div>
             </div>
@@ -100,7 +136,7 @@
                 </div>
             </form>
             <div class="panel-body" id="exam-body">
-                <button type="button" class="btn btn-primary full-width" id="save-exam" style="margin: 10px;">Save</button>
+                <button type="button" class="btn btn-primary full-width" id="save-exam" style="margin: 10px;">Shrani</button>
             </div>
         </div>
     </script>
@@ -110,7 +146,7 @@
         <div class="container task-container" style="width: 100%; margin-bottom: 20px;">
             <div class="row">
                 <div class="col-md-10">
-                    <input type="text" class="form-control" id="task-title" style="border-color: #2EA5F7; background-color: #DCEAFF;" placeholder="Task title">
+                    <input type="text" class="form-control" id="task-title" style="border-color: #2EA5F7; background-color: #DCEAFF;" placeholder="Naslov naloge">
                 </div>
                 <div class="col-md-2" style="padding-right: 0;">
                     <a href="#!" style="color: #DC5353;"><span class="glyphicon glyphicon-remove remove-task" aria-hidden="true" style="float: right; display: block; padding-left: 14px; line-height: 33px;"></span></a>
@@ -125,13 +161,13 @@
         <div class="question-container" style="padding-left: 10px;">
             <div class="row" style="margin-top: 10px;">
                 <div class="col-md-10">
-                    <input type="text" class="form-control" id="question-title" style="border-color: #B42EF7; background-color: #ECDCFF;" placeholder="Question title">
+                    <input type="text" class="form-control" id="question-title" style="border-color: #B42EF7; background-color: #ECDCFF;" placeholder="Vprasanje">
                 </div>
                 <div class="col-md-2" style="padding-right: 0;">
                     <a href="#!" style="color: #DC5353;"><span class="glyphicon glyphicon-remove remove-question" aria-hidden="true" style="float: right; display: block; padding-left: 14px; line-height: 33px;"></span></a>
                     <span class="glyphicon glyphicon-plus-sign add-answer" style="float: right; font-size: 18px; color: #BEBF0B; line-height: 33px; cursor: pointer;"></span>
                     <span class="glyphicon glyphicon-picture btn-file" style="cursor: pointer; float: right; padding-right: 14px; font-size: 18px; line-height: 33px;"><input name="images[]" type="file" class="file-input"></span>
-                    <span class="label label-primary question-type" question-type="0" style="float: right; margin-right: 14px; margin-top: 9px; padding-top: 3px; cursor: pointer;">Select</span>
+                    <span class="label label-primary question-type" question-type="0" style="float: right; margin-right: 14px; margin-top: 9px; padding-top: 3px; cursor: pointer;">Izbor</span>
                 </div>
             </div>
         </div>
@@ -142,7 +178,7 @@
         <div class="answer-container" style="padding-left: 10px;">
             <div class="row" style="margin-top: 10px;">
                 <div class="col-md-10">
-                    <input type="text" class="form-control" id="answer-title" style="border-color: #F7C32E; background-color: #FFFFDC;" placeholder="Answer title">
+                    <input type="text" class="form-control" id="answer-title" style="border-color: #F7C32E; background-color: #FFFFDC;" placeholder="Odgovor">
                 </div>
                 <div class="col-md-2" style="padding-right: 0;">
                     <a href="#!" style="color: #DC5353;"><span class="glyphicon glyphicon-remove remove-answer" aria-hidden="true" style="float: right; display: block; padding-left: 14px; line-height: 33px;"></span></a>
@@ -194,11 +230,11 @@
 
             if (question_type == 0) {
                 $(this).attr("question-type", 1);
-                $(this).text("Enter");
+                $(this).text("Vnos");
             }
             if (question_type == 1) {
                 $(this).attr("question-type", 0);
-                $(this).text("Select");
+                $(this).text("Izbor");
             }
         });
 
@@ -244,6 +280,14 @@
 
         function getExamTitle() {
             return $("#exam-title").val();
+        }
+
+        function getBookId() {
+            return $("#book-id").val();
+        }
+
+        function getCategoryId() {
+            return $("#category-id").val();
         }
 
         function getExamQuestionsAndAnswers() {
@@ -296,6 +340,8 @@
             var exam_object = {};
 
             exam_object['exam_title'] = getExamTitle();
+            exam_object['book_id'] = getBookId();
+            exam_object['category_id'] = getCategoryId();
             exam_object['exam_tasks'] = getExamQuestionsAndAnswers();
             exam_object = JSON.stringify(exam_object);
 
