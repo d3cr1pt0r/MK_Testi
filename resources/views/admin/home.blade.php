@@ -67,17 +67,17 @@
                     <button type="submit" class="btn btn-success" id="add-category" style="float: right;">Dodaj</button>
                 </div>
             </form>
-            <div style="clear: both; padding: 5px;"></div>
+            <div style="clear: both; padding-top: 30px;"></div>
+            <button type="button" class="btn btn-success full-width" id="add-exam">Dodaj test</button>
         </div>
-        <button type="button" class="btn btn-success full-width" id="add-exam">Dodaj test</button>
         <div id="exam-container"></div>
 
         <form class="form-group" action="{{ url('admin/generate-codes-multi/')  }}" method="post">
             {!! csrf_field() !!}
             <table class="table table-condensed" style="margin-top: 60px">
                 <th>Test</th>
-                <th>St. vprasanj</th>
-                <th>Casovna omejitev</th>
+                <th>Št. vprasanj</th>
+                <th>Časovna omejitev</th>
                 <th>#</th>
                 <th><input type="checkbox" value=""></th>
 
@@ -87,7 +87,7 @@
                         <td>{{ count($exam->questions()) }}</td>
                         <td>None</td>
                         <td>
-                            <a href="{{ url('admin/remove-exam/'.$exam->id)  }}">Izbrisi</a>
+                            <a href="{{ url('admin/remove-exam/'.$exam->id)  }}">Izbriši</a>
                         </td>
                         <td><input type="checkbox" name="exam_ids[]" value="{{ $exam->id  }}"></td>
                     </tr>
@@ -161,7 +161,7 @@
         <div class="question-container" style="padding-left: 10px;">
             <div class="row" style="margin-top: 10px;">
                 <div class="col-md-10">
-                    <input type="text" class="form-control" id="question-title" style="border-color: #B42EF7; background-color: #ECDCFF;" placeholder="Vprasanje">
+                    <input type="text" class="form-control" id="question-title" style="border-color: #B42EF7; background-color: #ECDCFF;" placeholder="Vprašanje">
                 </div>
                 <div class="col-md-2" style="padding-right: 0;">
                     <a href="#!" style="color: #DC5353;"><span class="glyphicon glyphicon-remove remove-question" aria-hidden="true" style="float: right; display: block; padding-left: 14px; line-height: 33px;"></span></a>
