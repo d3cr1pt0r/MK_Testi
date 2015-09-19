@@ -34,6 +34,7 @@
                     -->
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
+                    <li><a style="color: white;">{{ Auth::user()->name.' '.Auth::user()->surname }}</a></li>
                     <li><a href="{{url('admin/logout')}}">Logout</a></li>
                     <!--<li class="active"><a href="./">Static top <span class="sr-only">(current)</span></a></li> -->
                     <!--<li><a href="../navbar-fixed-top/">Fixed top</a></li> -->
@@ -46,6 +47,60 @@
     <!-- Main content -->
     <div class="container">
         <div class="well">
+            <h3 style="margin-top: 0; margin-bottom: 25px;">Uporabniki</h3>
+            <form action="{{ url('admin/add-user') }}" method="post">
+                {!! csrf_field() !!}
+                <div class="form-group">
+                    <div class="input-group" style="width: 100%; margin-bottom: 5px;">
+                        <div class="input-group-addon" style="width: 80px;">Ime</div>
+                        <input type="text" class="form-control" name="name">
+                    </div>
+                    <div class="input-group" style="width: 100%; margin-bottom: 5px;">
+                        <div class="input-group-addon" style="width: 80px;">Priimek</div>
+                        <input type="text" class="form-control" name="surname">
+                    </div>
+                    <div class="input-group" style="width: 100%; margin-bottom: 5px;">
+                        <div class="input-group-addon" style="width: 80px;">Email</div>
+                        <input type="text" class="form-control" name="email">
+                    </div>
+                    <div class="input-group" style="width: 100%; margin-bottom: 5px;">
+                        <div class="input-group-addon" style="width: 80px;">Geslo</div>
+                        <input type="text" class="form-control" name="password">
+                    </div>
+                    <div class="input-group" style="width: 100%; margin-bottom: 5px;">
+                        <div class="input-group-addon" style="width: 80px;">Tip uporabnika</div>
+                        <select class="form-control" name="user-type">
+                            <option value="0">Administrator</option>
+                            <option value="1">Profesor</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success" id="add-book" style="width: 100%;">Dodaj</button>
+                    <div style="clear: both;"></div>
+                </div>
+            </form>
+            <table class="table table-condensed" style="margin-top: 20px">
+                <th>Ime</th>
+                <th>Priimek</th>
+                <th>E-mail</th>
+                <th>Tip uporabnika</th>
+                <th style="text-align: right;">#</th>
+
+                @foreach($users as $user)
+                    <tr>
+                        <td>{{ $user->name }}</td>
+                        <td>{{ $user->surname }}</td>
+                        <td>{{ $user->email }}</td>
+                        <td>{{ $user->user_type == 0 ? 'Administrator' : 'Profesor' }}</td>
+                        <td align="right">
+                            <a href="{{ url('admin/remove-user/'.$user->id) }}">Izbriši</a>
+                            <a href="{{ url('admin/edit-user'.$user->id) }}">Uredi</a>
+                        </td>
+                    </tr>
+                @endforeach
+            </table>
+        </div>
+        <div class="well">
+            <h3 style="margin-top: 0; margin-bottom: 25px;">Knjige</h3>
             <form action="{{ url('admin/add-book') }}" method="post">
                 {!! csrf_field() !!}
                 <div class="form-group">
@@ -54,9 +109,28 @@
                         <input type="text" class="form-control" name="book-name">
                     </div>
                     <button type="submit" class="btn btn-success" id="add-book" style="float:right;">Dodaj</button>
+                    <div style="clear: both;"></div>
                 </div>
             </form>
-            <div style="clear: both; padding: 5px;"></div>
+            <table class="table table-condensed" style="margin-top: 20px">
+                <tr>
+                    <th>Ime knjige</th>
+                    <th style="text-align: right;">#</th>
+                </tr>
+
+                @foreach($books as $book)
+                    <tr>
+                        <td>{{ $book->title }}</td>
+                        <td align="right">
+                            <a href="{{ url('admin/remove-book/'.$book->id) }}">Izbriši</a>
+                            <a href="{{ url('admin/edit-book'.$book->id) }}">Uredi</a>
+                        </td>
+                    </tr>
+                @endforeach
+            </table>
+        </div>
+        <div class="well">
+            <h3 style="margin-top: 0; margin-bottom: 25px;">Kategorije</h3>
             <form action="{{ url('admin/add-category') }}" method="post">
                 {!! csrf_field() !!}
                 <div class="form-group">
@@ -65,11 +139,27 @@
                         <input type="text" class="form-control" name="category-name">
                     </div>
                     <button type="submit" class="btn btn-success" id="add-category" style="float: right;">Dodaj</button>
+                    <div style="clear: both;"></div>
                 </div>
             </form>
-            <div style="clear: both; padding-top: 30px;"></div>
-            <button type="button" class="btn btn-success full-width" id="add-exam">Dodaj test</button>
+            <table class="table table-condensed" style="margin-top: 20px">
+                <th>Ime kategorije</th>
+                <th>Število testov</th>
+                <th style="text-align: right;">#</th>
+
+                @foreach($categories as $category)
+                    <tr>
+                        <td>{{ $category->title }}</td>
+                        <td>{{ count($category->exams) }}</td>
+                        <td align="right">
+                            <a href="{{ url('admin/remove-category/'.$category->id) }}">Izbriši</a>
+                            <a href="{{ url('admin/edit-category'.$category->id) }}">Uredi</a>
+                        </td>
+                    </tr>
+                @endforeach
+            </table>
         </div>
+        <button type="button" class="btn btn-success full-width" id="add-exam">Dodaj test</button>
         <div id="exam-container"></div>
 
         <form class="form-group" action="{{ url('admin/generate-codes-multi/')  }}" method="post">

@@ -9,6 +9,7 @@ use URL;
 use Auth;
 use Redirect;
 use ExamHelper;
+use MKTests\User;
 use MKTests\Exam;
 use MKTests\Book;
 use MKTests\Category;
@@ -26,11 +27,13 @@ class AdminController extends Controller
     public function getIndex()
     {
         $exams = Exam::all();
+        $users = User::all();
         $books = Book::all();
         $categories = Category::all();
 
         $view = view('admin.home');
         $view->exams = $exams;
+        $view->users = $users;
         $view->books = $books;
         $view->categories = $categories;
 
@@ -60,7 +63,7 @@ class AdminController extends Controller
         $username = $request->input('username');
         $password = $request->input('password');
 
-        Auth::attempt(['name' => $username, 'password' => $password]);
+        Auth::attempt(['email' => $username, 'password' => $password]);
 
         if (Auth::user())
             return Redirect::to('admin')->with('response_status', ['success' => true, 'message' => 'Logged in']);
@@ -81,6 +84,21 @@ class AdminController extends Controller
     public function getRemoveCode($id) {
         $code = ExamHelper::removeCode($id);
         return Redirect::back()->with('response_status', ['success' => true, 'message' => $code.' deleted!']);
+    }
+
+    public function getRemoveUser($id) {
+        $user_email = ExamHelper::removeUser($id);
+        return Redirect::to('admin')->with('response_status', ['success' => true, 'message' => $user_email.' deleted!']);
+    }
+
+    public function getRemoveCategory($id) {
+        $category_name = ExamHelper::removeCategory($id);
+        return Redirect::to('admin')->with('response_status', ['success' => true, 'message' => $category_name.' deleted!']);
+    }
+
+    public function getRemoveBook($id) {
+        $book_name = ExamHelper::removeBook($id);
+        return Redirect::to('admin')->with('response_status', ['success' => true, 'message' => $book_name.' deleted!']);
     }
 
     public function getResetCode($id) {
@@ -104,6 +122,20 @@ class AdminController extends Controller
         if($category)
             return Redirect::back()->with('response_status', ['success' => true, 'message' => $category->title.' added!']);
         return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Failed to add new book!']);
+    }
+
+    public function postAddUser(Request $request) {
+        $name = $request->input('name');
+        $surname = $request->input('surname');
+        $email = $request->input('email');
+        $password = $request->input('password');
+        $user_type = $request->input('user-type');
+
+        $user = ExamHelper::createUser($name, $surname, $email, $password, $user_type);
+
+        if($user)
+            return Redirect::back()->with('response_status', ['success' => true, 'message' => $user->name.' '.$user->surname.' added!']);
+        return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Failed to add new user!']);
     }
 
     public function postGenerateCodesMulti(Request $request) {

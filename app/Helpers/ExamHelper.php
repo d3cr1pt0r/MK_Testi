@@ -7,9 +7,21 @@ use MKTests\Question;
 use MKTests\Answer;
 use MKTests\Result;
 use MKTests\Category;
+use MKTests\User;
 
 class ExamHelper
 {
+    static public function createUser($name, $surname, $email, $password, $user_type) {
+        $user = new User;
+        $user->name = $name;
+        $user->surname = $surname;
+        $user->email = $email;
+        $user->password = Hash::make($password);
+        $user->user_type = $user_type;
+        $user->save();
+
+        return $user;
+    }
 
     static public function createResult($exam, $code, $used) {
         $result = new Result;
@@ -91,6 +103,30 @@ class ExamHelper
         $result->delete();
 
         return $result_code;
+    }
+
+    static public function removeUser($id) {
+        $user = User::findOrFail($id);
+        $user_email = $user->email;
+        $user->delete();
+
+        return $user_email;
+    }
+
+    static public function removeCategory($id) {
+        $category = Category::findOrFail($id);
+        $category_name = $category->title;
+        $category->delete();
+
+        return $category_name;
+    }
+
+    static public function removeBook($id) {
+        $book = Book::findOrFail($id);
+        $book_name = $book->title;
+        $book->delete();
+
+        return $book_name;
     }
 
     static public function resetCode($id) {
