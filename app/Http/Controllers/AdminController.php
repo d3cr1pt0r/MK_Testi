@@ -40,6 +40,37 @@ class AdminController extends Controller
         return $view;
     }
 
+    public function getBooks() {
+        $books = Book::all();
+
+        $view = view('admin.books');
+        $view->books = $books;
+
+        return $view;
+    }
+
+    public function getCategories() {
+        $categories = Category::all();
+        $users = User::all();
+
+        $view = view('admin.categories');
+        $view->categories = $categories;
+        $view->users = $users;
+
+        return $view;
+    }
+
+    public function getUsers() {
+        $categories = Category::all();
+        $users = User::all();
+
+        $view = view('admin.users');
+        $view->categories = $categories;
+        $view->users = $users;
+
+        return $view;
+    }
+
     public function getExam($id)
     {
         $exam = Exam::findOrFail($id);
@@ -117,7 +148,8 @@ class AdminController extends Controller
 
     public function postAddCategory(Request $request) {
         $title = $request->input('category-name');
-        $category = ExamHelper::createCategory($title);
+        $user_id = $request->input('user-id');
+        $category = ExamHelper::createCategory($title, $user_id);
 
         if($category)
             return Redirect::back()->with('response_status', ['success' => true, 'message' => $category->title.' added!']);
@@ -130,8 +162,9 @@ class AdminController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
         $user_type = $request->input('user-type');
+        $user_ids = $request->input('user-id');
 
-        $user = ExamHelper::createUser($name, $surname, $email, $password, $user_type);
+        $user = ExamHelper::createUser($name, $surname, $email, $password, $user_type, $user_ids);
 
         if($user)
             return Redirect::back()->with('response_status', ['success' => true, 'message' => $user->name.' '.$user->surname.' added!']);

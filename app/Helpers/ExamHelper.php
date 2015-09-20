@@ -11,13 +11,22 @@ use MKTests\User;
 
 class ExamHelper
 {
-    static public function createUser($name, $surname, $email, $password, $user_type) {
+    static public function createUser($name, $surname, $email, $password, $user_type, $category_ids) {
         $user = new User;
         $user->name = $name;
         $user->surname = $surname;
         $user->email = $email;
         $user->password = Hash::make($password);
         $user->user_type = $user_type;
+
+        $user->save();
+
+        foreach($category_ids as $category_id) {
+            $cat = Category::find($category_id);
+            $cat->user_id = $user->id;
+            $cat->save();
+        }
+
         $user->save();
 
         return $user;
@@ -41,9 +50,12 @@ class ExamHelper
         return $book;
     }
 
-    static public function createCategory($title) {
+    static public function createCategory($title, $user_id) {
+        $user = User::findOrFail($user_id);
+
         $category = new Category;
         $category->title = $title;
+        $category->user()->associate($user);
         $category->save();
 
         return $category;

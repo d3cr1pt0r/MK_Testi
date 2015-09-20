@@ -12,4 +12,10 @@ class Category extends Model
     {
         return $this->hasMany('MKTests\Exam', 'category_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo('MKTests\User', 'user_id');
+    }
+
 }
