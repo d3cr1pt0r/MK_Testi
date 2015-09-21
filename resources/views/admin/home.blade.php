@@ -17,7 +17,7 @@
                 <ul class="nav navbar-nav">
                     <li class="active"><a href="{{url('/admin')}}">Domov</a></li>
                     <li><a href="{{url('/admin/books')}}">Knjige</a></li>
-                    <li><a href="{{url('/admin/users')}}">Kategorije</a></li>
+                    <li><a href="{{url('/admin/categories')}}">Kategorije</a></li>
                     <li><a href="{{url('/admin/users')}}">Uporabniki</a></li>
                     <!--
                     <li class="dropdown">
@@ -61,7 +61,7 @@
 
                 @foreach($exams as $exam)
                     <tr>
-                        <td><a href="{{ url('admin/exam/'.$exam->id)  }}">{{ $exam->title }}</a></td>
+                        <td><a href="{{ url('admin/exam/'.$exam->id)  }}">{{ $exam->book->title }}</a></td>
                         <td>{{ $exam->category->title }}</td>
                         <td>{{ count($exam->questions()) }}</td>
                         <td>
@@ -92,9 +92,8 @@
     <script type="text/html" id="exam-panel">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <input type="text" class="form-control" id="exam-title" style="width: 300px; float: left;" placeholder="Naslov testa">
                 <p style="float: left; line-height: 33px; padding-left: 10px; padding-right: 4px;">Knjiga: </p>
-                <select type="text" class="form-control" id="book-id" style="width: 200px; float: left;" placeholder="Naslov testa">
+                <select type="text" class="form-control" id="book-id" style="width: 200px; float: left;">
                     @foreach($books as $book)
                         <option value="{{ $book->id }}">{{ $book->title }}</option>
                     @endforeach
@@ -256,10 +255,6 @@
         // Scan questions and answers and pack them in JSON //
         //////////////////////////////////////////////////////
 
-        function getExamTitle() {
-            return $("#exam-title").val();
-        }
-
         function getBookId() {
             return $("#book-id").val();
         }
@@ -317,7 +312,6 @@
         $("body").on("click", "#save-exam", function() {
             var exam_object = {};
 
-            exam_object['exam_title'] = getExamTitle();
             exam_object['book_id'] = getBookId();
             exam_object['category_id'] = getCategoryId();
             exam_object['exam_tasks'] = getExamQuestionsAndAnswers();

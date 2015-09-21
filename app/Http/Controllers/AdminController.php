@@ -119,17 +119,17 @@ class AdminController extends Controller
 
     public function getRemoveUser($id) {
         $user_email = ExamHelper::removeUser($id);
-        return Redirect::to('admin')->with('response_status', ['success' => true, 'message' => $user_email.' deleted!']);
+        return Redirect::back()->with('response_status', ['success' => true, 'message' => $user_email.' deleted!']);
     }
 
     public function getRemoveCategory($id) {
         $category_name = ExamHelper::removeCategory($id);
-        return Redirect::to('admin')->with('response_status', ['success' => true, 'message' => $category_name.' deleted!']);
+        return Redirect::back()->with('response_status', ['success' => true, 'message' => $category_name.' deleted!']);
     }
 
     public function getRemoveBook($id) {
         $book_name = ExamHelper::removeBook($id);
-        return Redirect::to('admin')->with('response_status', ['success' => true, 'message' => $book_name.' deleted!']);
+        return Redirect::back()->with('response_status', ['success' => true, 'message' => $book_name.' deleted!']);
     }
 
     public function getResetCode($id) {
@@ -148,8 +148,7 @@ class AdminController extends Controller
 
     public function postAddCategory(Request $request) {
         $title = $request->input('category-name');
-        $user_id = $request->input('user-id');
-        $category = ExamHelper::createCategory($title, $user_id);
+        $category = ExamHelper::createCategory($title);
 
         if($category)
             return Redirect::back()->with('response_status', ['success' => true, 'message' => $category->title.' added!']);

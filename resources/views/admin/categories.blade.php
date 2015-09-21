@@ -51,17 +51,9 @@
         <form action="{{ url('admin/add-category') }}" method="post">
             {!! csrf_field() !!}
             <div class="form-group">
-                <div class="input-group" style="float: left; width: 60%;">
+                <div class="input-group" style="float: left; width: 90%;">
                     <div class="input-group-addon" style="max-width: 130px;">Naslov kategorije</div>
                     <input type="text" class="form-control" name="category-name">
-                </div>
-                <div class="input-group" style="float: left; width: 10%; margin-left: 10px;">
-                    <div class="input-group-addon" style="max-width: 130px;">Profesor</div>
-                    <select type="text" class="form-control" name="user-id" style="width: 200px; float: left;">
-                        @foreach($users as $user)
-                            <option value="{{ $user->id }}">{{ $user->name.' '.$user->surname }}</option>
-                        @endforeach
-                    </select>
                 </div>
                 <button type="submit" class="btn btn-success" id="add-category" style="float: right;">Dodaj</button>
                 <div style="clear: both;"></div>

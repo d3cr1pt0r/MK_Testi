@@ -5,7 +5,7 @@
         @include('admin.parts.messages')
 
         <div class="page-header">
-            <h1>Administration <small>- login</small></h1>
+            <h1>Administracija <small>- vpis</small></h1>
         </div>
 
         <div class="login-container">
@@ -13,17 +13,17 @@
                 {!! csrf_field() !!}
                 <div class="form-group">
                     <div class="input-group">
-                        <div class="input-group-addon">Username</div>
+                        <div class="input-group-addon">Email</div>
                         <input type="text" class="form-control" name="username">
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="input-group">
-                        <div class="input-group-addon">Password</div>
+                        <div class="input-group-addon">Geslo</div>
                         <input type="password" class="form-control" name="password">
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Login</button>
+                <button type="submit" class="btn btn-primary">Vstop</button>
             </form>
         </div>
     </div>
