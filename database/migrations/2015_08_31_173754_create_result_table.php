@@ -17,6 +17,8 @@ class CreateResultTable extends Migration
             $table->decimal('score', 8, 2);
             $table->string('code', 10);
             $table->boolean('used');
+            $table->integer('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->integer('exam_id')->unsigned();
             $table->foreign('exam_id')->references('id')->on('exams')->onDelete('cascade');
             $table->timestamps();

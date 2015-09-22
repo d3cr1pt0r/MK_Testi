@@ -12,4 +12,5 @@
 */
 
 Route::controller('/admin', 'AdminController');
+Route::controller('/teachers', 'TeacherController');
 Route::controller('/', 'HomeController');

@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\QueryException;
 use MKTests\Exam;
 use MKTests\Book;
 use MKTests\Task;
@@ -11,31 +12,32 @@ use MKTests\User;
 
 class ExamHelper
 {
-    static public function createUser($name, $surname, $email, $password, $user_type, $category_ids) {
-        $user = new User;
-        $user->name = $name;
-        $user->surname = $surname;
-        $user->email = $email;
-        $user->password = Hash::make($password);
-        $user->user_type = $user_type;
+    static public function createUser($name, $surname, $school_name, $school_type, $email, $password, $user_type) {
+        try {
+            $user = new User;
+            $user->name = $name;
+            $user->surname = $surname;
+            $user->school_name = $school_name;
+            $user->school_type = $school_type;
+            $user->email = $email;
+            $user->password = Hash::make($password);
+            $user->user_type = $user_type;
+            $user->save();
 
-        $user->save();
-
-        foreach($category_ids as $category_id) {
-            $cat = Category::find($category_id);
-            $cat->user_id = $user->id;
-            $cat->save();
+            return ['success' => true, 'message' => 'Created user '.$user->name.' '.$user->surname];
         }
-
-        $user->save();
+        catch(QueryException $e) {
+            return ['success' => false, 'exception_code' => $e->getCode(), 'exception_message' => $e->getMessage(), 'message' => 'Failed to create user'];
+        }
 
         return $user;
     }
 
-    static public function createResult($exam, $code, $used) {
+    static public function createResult($exam, $user, $code, $used) {
         $result = new Result;
         $result->code = $code;
         $result->used = $used;
+        $result->user()->associate($user);
         $result->exam()->associate($exam);
         $result->save();
 

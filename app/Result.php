@@ -16,6 +16,11 @@ class Result extends Model
         return $this->belongsTo('MKTests\Exam', 'exam_id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo('MKTests\User', 'user_id');
+    }
+
     public function question_answers()
     {
         return $this->hasMany('MKTests\QuestionAnswer', 'result_id');

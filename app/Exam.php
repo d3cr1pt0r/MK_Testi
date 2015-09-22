@@ -2,6 +2,7 @@
 
 namespace MKTests;
 
+use Auth;
 use Illuminate\Database\Eloquent\Model;
 
 class Exam extends Model
@@ -38,6 +39,16 @@ class Exam extends Model
     public function results()
     {
         return $this->hasMany('MKTests\Result', 'exam_id');
+    }
+
+    public function resultsUsed()
+    {
+        return $this->results()->where('used', true)->where('user_id', Auth::user()->id)->get();
+    }
+
+    public function resultsUnused()
+    {
+        return $this->results()->where('used', false)->where('user_id', Auth::user()->id)->get();
     }
 
 }

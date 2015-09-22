@@ -161,9 +161,8 @@ class AdminController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
         $user_type = $request->input('user-type');
-        $user_ids = $request->input('user-id');
 
-        $user = ExamHelper::createUser($name, $surname, $email, $password, $user_type, $user_ids);
+        $user = ExamHelper::createUser($name, $surname, '', 0, $email, $password, $user_type);
 
         if($user)
             return Redirect::back()->with('response_status', ['success' => true, 'message' => $user->name.' '.$user->surname.' added!']);
