@@ -2,6 +2,7 @@
 
 namespace MKTests\Http\Controllers;
 
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 
 use Auth;
@@ -83,14 +84,25 @@ class TeacherController extends Controller
         $category_id = $request->input('category-id');
         $num_codes = $request->input('num-codes');
         $exams = Category::find($category_id)->exams;
+        $codes = [];
 
         for ($i=0;$i<$num_codes;$i++) {
             $uid = ExamHelper::generateUID();
 
             foreach($exams as $exam) {
                 ExamHelper::createResult($exam, Auth::user(), $uid, false);
+                $codes[] = $uid;
             }
         }
+
+        $data = ['codes' => array_unique($codes)];
+
+        Mail::send('emails.welcome', $data, function ($message) {
+            $message->from('mktesti@makeithappen.com', 'MK Tekmovanje');
+
+            $message->to(Auth::user()->email);
+            $message->subject('Šifre za test');
+        });
 
         return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Generated '.$num_codes.' codes for '.count($exams).' exams!']);
     }
