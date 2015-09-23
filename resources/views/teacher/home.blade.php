@@ -34,73 +34,23 @@
                 <th>Ime kategorije</th>
                 <th>Število šifer</th>
                 <th>Število testov</th>
-                <th>Testi</th>
+                <th style="text-align: right;">Generiranje</th>
                 @foreach($categories as $category)
                     <tr>
-                        <td>{{ $category->title }}</td>
+                        <td><a href="{{ url('teachers/category/'.$category->id) }}">{{ $category->title }}</a></td>
                         <td>{{ 4 }}</td>
                         <td>{{ count($category->exams) }}</td>
-                        <td>
+                        <td style="text-align: right;">
                             <form action="{{ url('teachers/generate-codes-category') }}" method="post">
                                 {!! csrf_field() !!}
                                 <input type="hidden" name="category-id" value="{{ $category->id }}">
-                                <input type="text" name="num-codes" style="width: 85%;">
-                                <button type="submit" style="width: 14%;margin-bottom: 10px;">Generiraj</button>
+                                <input type="text" name="num-codes" style="">
+                                <button type="submit" style="">Generiraj</button>
                             </form>
-                            <table class="table table-bordered">
-                                <th>Naslov</th>
-                                <th>Status šifer</th>
-                                <th>#</th>
-                                @foreach($category->exams as $exam)
-                                    <tr>
-                                        <td><a href="{{ url('teachers/exam/'.$exam->id) }}">{{ $exam->book->title }}</a></td>
-                                        <td>
-                                            <p style="margin: 0px; font-size: 12px; color: blue;">All: {{ count($exam->resultsUsed()) }}</p>
-                                            <p style="margin: 0px; font-size: 12px; color: green;">Used: {{ count($exam->resultsUsed()) }}</p>
-                                            <p style="margin: 0px; font-size: 12px; color: red;">Unused: {{ count($exam->resultsUnused()) }}</p>
-                                        </td>
-                                        <td style="width: 200px;">
-                                            <form action="{{ url('teachers/generate-codes-exam') }}" method="post">
-                                                {!! csrf_field() !!}
-                                                <input type="hidden" name="exam-id" value="{{ $exam->id }}">
-                                                <input type="text" name="num-codes" style="width: 100px;">
-                                                <button type="submit">Generiraj</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </table>
                         </td>
                     </tr>
                 @endforeach
             </table>
-
-            {{--<table class="table table-condensed" style="margin-top: 20px">--}}
-                {{--<th>Ime kategorije</th>--}}
-                {{--<th>Število šifer</th>--}}
-                {{--<th>Število testov</th>--}}
-                {{--<th style="text-align: right;">#</th>--}}
-
-                {{--@foreach($categories as $category)--}}
-                    {{--<tr>--}}
-                        {{--<td>{{ $category->title }}</td>--}}
-                        {{--<td>{{ 4 }}</td>--}}
-                        {{--<td>{{ count($category->exams) }}</td>--}}
-                        {{--<td align="right">--}}
-                            {{--<form action="" method="post">--}}
-                                {{--<input type="text" name="num-codes">--}}
-                                {{--<button type="submit">Generiraj</button>--}}
-                            {{--</form>--}}
-                        {{--</td>--}}
-                    {{--</tr>--}}
-                    {{--<tr>--}}
-                        {{--<table class="table table-condensed">--}}
-                            {{--<th>Ime kategorije</th>--}}
-                            {{--<th>Število testov</th>--}}
-                        {{--</table>--}}
-                    {{--</tr>--}}
-                {{--@endforeach--}}
-            {{--</table>--}}
         </div>
     </div>
 @endsection

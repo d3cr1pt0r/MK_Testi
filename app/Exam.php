@@ -41,6 +41,11 @@ class Exam extends Model
         return $this->hasMany('MKTests\Result', 'exam_id');
     }
 
+    public function resultsUser()
+    {
+        return $this->results()->where('user_id', Auth::user()->id)->get();
+    }
+
     public function resultsUsed()
     {
         return $this->results()->where('used', true)->where('user_id', Auth::user()->id)->get();

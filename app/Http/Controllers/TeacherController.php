@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Auth;
 use ExamHelper;
 use MKTests\Category;
+use MKTests\Exam;
 use MKTests\User;
 use Illuminate\Support\Facades\Redirect;
 use MKTests\Http\Requests;
@@ -38,6 +39,15 @@ class TeacherController extends Controller
     public function getCheckpoint()
     {
         $view = view('teacher.entry');
+        return $view;
+    }
+
+    public function getCategory($id) {
+        $category = Category::find($id);
+
+        $view = view('teacher.category');
+        $view->category = $category;
+
         return $view;
     }
 
@@ -83,5 +93,29 @@ class TeacherController extends Controller
         }
 
         return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Generated '.$num_codes.' codes for '.count($exams).' exams!']);
+    }
+
+    public function postGenerateCodesExam(Request $request) {
+        $exam_id = $request->input('exam-id');
+        $num_codes = $request->input('num-codes');
+
+        $exam = Exam::findOrFail($exam_id);
+
+        for ($i=0;$i<$num_codes;$i++) {
+            $uid = ExamHelper::generateUID();
+
+            ExamHelper::createResult($exam, Auth::user(), $uid, false);
+        }
+
+        return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Generated '.$num_codes.' codes!']);
+    }
+
+    public function getExam($id) {
+        $exam = Exam::findOrFail($id);
+
+        $view = view('teacher.exam');
+        $view->exam = $exam;
+
+        return $view;
     }
 }
