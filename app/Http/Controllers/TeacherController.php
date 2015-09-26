@@ -24,7 +24,7 @@ class TeacherController extends Controller
 
     public function getIndex()
     {
-        $categories = Category::all();
+        $categories = Category::where('school_type', Auth::user()->school_type)->orderBy('title', 'asc')->get();
 
         $view = view('teacher.home');
         $view->categories = $categories;
@@ -61,10 +61,23 @@ class TeacherController extends Controller
         $school_type = $request->input('school-type');
         $password = $request->input('password');
 
+        if ($school_type == -1)
+            return Redirect::back()->with('response_status', ['success' => false, 'message' => 'Izberite tip šole!']);
+
         $status = ExamHelper::createUser($name, $surname, $school_name, $school_type, $email, $password, 1);
 
-        if ($status['success'])
+        if ($status['success']) {
+            Mail::send('emails.hello', [], function ($message) use($email) {
+                $message->from('mktesti@makeithappen.com', 'Tekmovanje BOOKWORMS - registracija');
+
+                $message->to($email);
+                $message->subject('Registracija novega profesorja');
+            });
+
             return Redirect::back()->with('response_status', ['success' => $status['success'], 'message' => $status['message']]);
+        }
+        if ($status['exception_code'] == 23000)
+            return Redirect::back()->with('response_status', ['success' => $status['success'], 'message' => 'Email že obstaja']);
         return Redirect::back()->with('response_status', ['success' => $status['success'], 'message' => $status['message'].' (Exception code '.$status['exception_code'].')']);
     }
 
@@ -76,13 +89,13 @@ class TeacherController extends Controller
         Auth::attempt(['email' => $email, 'password' => $password]);
 
         if (Auth::user())
-            return Redirect::to('teachers')->with('response_status', ['success' => true, 'message' => 'Logged in']);
-        return Redirect::to('teachers/checkpoint')->with('response_status', ['success' => false, 'message' => 'Login failed']);
+            return Redirect::to('teachers')->with('response_status', ['success' => true, 'message' => 'Prijava uspešna!']);
+        return Redirect::to('teachers/checkpoint')->with('response_status', ['success' => false, 'message' => 'Prijava neuspešna!']);
     }
 
     public function postGenerateCodesCategory(Request $request) {
-        $category_id = $request->input('category-id');
-        $num_codes = $request->input('num-codes');
+        $category_id = $request->input('category_id');
+        $num_codes = $request->input('num_codes');
         $exams = Category::find($category_id)->exams;
         $codes = [];
 
@@ -95,6 +108,11 @@ class TeacherController extends Controller
             }
         }
 
+        $user = User::find(Auth::user()->id);
+        $user->generated = 1;
+        $user->save();
+
+        /*
         $data = ['codes' => array_unique($codes)];
 
         Mail::send('emails.welcome', $data, function ($message) {
@@ -103,8 +121,10 @@ class TeacherController extends Controller
             $message->to(Auth::user()->email);
             $message->subject('Šifre za test');
         });
+        */
 
-        return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Generated '.$num_codes.' codes for '.count($exams).' exams!']);
+        return "OK";
+        //return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Generated '.$num_codes.' codes for '.count($exams).' exams!']);
     }
 
     public function postGenerateCodesExam(Request $request) {

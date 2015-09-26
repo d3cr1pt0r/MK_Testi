@@ -18,6 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('surname');
             $table->string('school_name');
             $table->integer('school_type');
+            $table->boolean('generated');
             $table->string('email')->unique();
             $table->integer('user_type');
             $table->string('password', 60);

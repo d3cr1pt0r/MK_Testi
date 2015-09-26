@@ -12,7 +12,8 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Mladinska Knjiga - Testi</a>
+            <a class="navbar-brand" href="#" style="padding: 0; margin: 0; padding-top: 5px;"><img height="40" src="{{ URL::asset('assets/img/logo_mk.jpg') }}"></a>
+            <a class="navbar-brand" href="#" style="padding: 0; margin: 0; padding-top: 5px; margin-left: 3px;"><img height="40" src="{{ URL::asset('assets/img/logo_co.jpg') }}"></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -20,7 +21,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a style="color: white;">{{ Auth::user()->name.' '.Auth::user()->surname }}</a></li>
-                <li><a href="{{url('teachers/logout')}}">Logout</a></li>
+                <li><a href="{{url('teachers/logout')}}">Odjava</a></li>
             </ul>
         </div>
     </div>
@@ -32,10 +33,10 @@
         <h3 style="margin-top: 0; margin-bottom: 25px;">{{ $exam->book->title  }} - {{ $exam->category->title }}</h3>
 
         @foreach($exam->resultsUser() as $result)
-            <a href="{{ url('code/'.$result->code) }}"><span style="float: left; width: 100px; color: {{ $result->used ? $result->getResults()['score'] < 50 ? 'red' : 'green' : 'blue' }}">{{ $result->code }}</span></a>
+            <span style="float: left; width: 100px; color: {{ $result->used ? $result->getResults()['score'] < 50 ? 'red' : 'green' : 'blue' }}">{{ $result->code }}</span>
             <span style="float: left; width: 70px; color: {{ $result->used ? $result->getResults()['score'] < 50 ? 'red' : 'green' : 'blue' }}">{{ number_format($result->getResults()['score'], 1).'%' }}</span>
-            <a href="{{ url('admin/remove-code/'.$result->id)  }}" style="float: left; margin-left: 5px;">Remove</a>
-            <a href="{{ url('admin/reset-code/'.$result->id)  }}" style="float: left; margin-left: 15px;">Reset</a>
+            <!-- <a href="{{ url('admin/remove-code/'.$result->id)  }}" style="float: left; margin-left: 5px;">Remove</a> -->
+            <!-- <a href="{{ url('admin/reset-code/'.$result->id)  }}" style="float: left; margin-left: 15px;">Reset</a> -->
             <div style="clear: left;"></div>
         @endforeach
     </div>

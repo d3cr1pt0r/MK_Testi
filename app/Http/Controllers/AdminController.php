@@ -148,7 +148,8 @@ class AdminController extends Controller
 
     public function postAddCategory(Request $request) {
         $title = $request->input('category-name');
-        $category = ExamHelper::createCategory($title);
+        $school_type = $request->input('school-type');
+        $category = ExamHelper::createCategory($title, $school_type);
 
         if($category)
             return Redirect::back()->with('response_status', ['success' => true, 'message' => $category->title.' added!']);

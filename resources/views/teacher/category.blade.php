@@ -11,7 +11,8 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Mladinska Knjiga - Testi</a>
+            <a class="navbar-brand" href="#" style="padding: 0; margin: 0; padding-top: 5px;"><img height="40" src="{{ URL::asset('assets/img/logo_mk.jpg') }}"></a>
+            <a class="navbar-brand" href="#" style="padding: 0; margin: 0; padding-top: 5px; margin-left: 3px;"><img height="40" src="{{ URL::asset('assets/img/logo_co.jpg') }}"></a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -19,7 +20,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 <li><a style="color: white;">{{ Auth::user()->name.' '.Auth::user()->surname }}</a></li>
-                <li><a href="{{url('teachers/logout')}}">Logout</a></li>
+                <li><a href="{{url('teachers/logout')}}">Odjava</a></li>
             </ul>
         </div>
     </div>
@@ -33,15 +34,16 @@
         <table class="table table-bordered">
             <th>Naslov</th>
             <th>Status šifer</th>
-            <th>#</th>
+            <!--<th>#</th>-->
             @foreach($category->exams as $exam)
                 <tr>
                     <td><a href="{{ url('teachers/exam/'.$exam->id) }}">{{ $exam->book->title }}</a></td>
                     <td>
-                        <p style="margin: 0px; font-size: 12px; color: blue;">All: {{ count($exam->resultsUsed()) }}</p>
-                        <p style="margin: 0px; font-size: 12px; color: green;">Used: {{ count($exam->resultsUsed()) }}</p>
-                        <p style="margin: 0px; font-size: 12px; color: red;">Unused: {{ count($exam->resultsUnused()) }}</p>
+                        <p style="margin: 0px; font-size: 12px; color: blue;">Vseh: {{ count($exam->resultsUsed()) + count($exam->resultsUnused()) }}</p>
+                        <p style="margin: 0px; font-size: 12px; color: green;">Rešenih: {{ count($exam->resultsUsed()) }}</p>
+                        <p style="margin: 0px; font-size: 12px; color: red;">Nerešenih: {{ count($exam->resultsUnused()) }}</p>
                     </td>
+                    <!--
                     <td style="width: 200px;">
                         <form action="{{ url('teachers/generate-codes-exam') }}" method="post">
                             {!! csrf_field() !!}
@@ -50,6 +52,7 @@
                             <button type="submit">Generiraj</button>
                         </form>
                     </td>
+                    -->
                 </tr>
             @endforeach
         </table>

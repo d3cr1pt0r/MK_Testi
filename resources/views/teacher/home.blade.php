@@ -11,15 +11,16 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Mladinska Knjiga - Testi</a>
+                <a class="navbar-brand" href="#" style="padding: 0; margin: 0; padding-top: 5px;"><img height="40" src="{{ URL::asset('assets/img/logo_mk.jpg') }}"></a>
+                <a class="navbar-brand" href="#" style="padding: 0; margin: 0; padding-top: 5px; margin-left: 3px;"><img height="40" src="{{ URL::asset('assets/img/logo_co.jpg') }}"></a>
             </div>
             <div id="navbar" class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
+                <ul class="nav navbar-nav" style="margin-left: 10px;">
                     <li class="active"><a href="{{url('teachers')}}">Domov</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a style="color: white;">{{ Auth::user()->name.' '.Auth::user()->surname }}</a></li>
-                    <li><a href="{{url('teachers/logout')}}">Logout</a></li>
+                    <li><a href="{{url('teachers/logout')}}">Odjava</a></li>
                 </ul>
             </div>
         </div>
@@ -28,29 +29,70 @@
 
     <div class="container">
         <div class="well">
+            V spodnja polja vpišite število učencev, ki jih želite prijaviti na tekmovanje BOOKWORMS za vsak razred posebej. Ko bodo šifre generirane, boste dobili seznam na vašo elektronsko pošto. S šiframi, ki vam bodo poslane na elektronsko pošto bodo lahko učenci dostopali do tekmovanja oziroma testov.
+        </div>
+        <div class="well">
             <h3 style="margin-top: 0; margin-bottom: 25px;">Kategorije</h3>
 
             <table class="table table-bordered">
                 <th>Ime kategorije</th>
-                <th>Število šifer</th>
                 <th>Število testov</th>
                 <th style="text-align: right;">Generiranje</th>
+
                 @foreach($categories as $category)
                     <tr>
                         <td><a href="{{ url('teachers/category/'.$category->id) }}">{{ $category->title }}</a></td>
-                        <td>{{ 4 }}</td>
                         <td>{{ count($category->exams) }}</td>
-                        <td style="text-align: right;">
-                            <form action="{{ url('teachers/generate-codes-category') }}" method="post">
-                                {!! csrf_field() !!}
+                        @if(!$category->hasUserGenerated())
+                            <td style="text-align: right;">
                                 <input type="hidden" name="category-id" value="{{ $category->id }}">
                                 <input type="text" name="num-codes" style="">
-                                <button type="submit" style="">Generiraj</button>
-                            </form>
-                        </td>
+                                <button type="submit" class="generate-codes">Generiraj</button>
+                            </td>
+                        @else
+                            <td>
+                                <p>Za ta razred ste šifre že zgenerirali</p>
+                            </td>
+                        @endif
                     </tr>
                 @endforeach
             </table>
         </div>
     </div>
+
+<div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title" id="mySmallModalLabel">Generiranje</h4>
+            </div>
+            <div class="modal-body">
+                Sistem generira šifre. Prosimo počakajte trenutek...
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script>
+    $(".generate-codes").click(function() {
+        var c_id = $(this).parent().find($('[name="category-id"]')).val();
+        var num_codes = $(this).parent().find($('[name="num-codes"]')).val();
+
+        $('#myModal').modal({
+            backdrop: 'static',
+            keyboard: false
+        })
+
+        $.post( "{{ url('teachers/generate-codes-category') }}", { _token: "{{ csrf_token() }}", category_id: c_id, num_codes: num_codes })
+            .done(function( data ) {
+                if (data == "OK") {
+                    location.reload();
+                }
+                else {
+                    alert("Failed to generate codes. Contact developers!");
+                }
+            });
+    });
+</script>
 @endsection

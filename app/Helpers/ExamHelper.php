@@ -24,7 +24,7 @@ class ExamHelper
             $user->user_type = $user_type;
             $user->save();
 
-            return ['success' => true, 'message' => 'Created user '.$user->name.' '.$user->surname];
+            return ['success' => true, 'message' => 'Uporabnik '.$user->name.' '.$user->surname.' kreiran!'];
         }
         catch(QueryException $e) {
             return ['success' => false, 'exception_code' => $e->getCode(), 'exception_message' => $e->getMessage(), 'message' => 'Failed to create user'];
@@ -52,9 +52,10 @@ class ExamHelper
         return $book;
     }
 
-    static public function createCategory($title) {
+    static public function createCategory($title, $school_type) {
         $category = new Category;
         $category->title = $title;
+        $category->school_type = $school_type;
         $category->save();
 
         return $category;

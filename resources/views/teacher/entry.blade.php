@@ -16,31 +16,37 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-addon" style="min-width: 72px;">Ime</div>
-                                <input type="text" class="form-control" name="name">
+                                <input type="text" class="form-control" name="name" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-addon" style="min-width: 72px;">Priimek</div>
-                                <input type="text" class="form-control" name="surname">
+                                <input type="text" class="form-control" name="surname" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-addon" style="min-width: 72px;">Email</div>
-                                <input type="text" class="form-control" name="email">
+                                <input type="text" class="form-control" name="email" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-addon" style="min-width: 72px;">Šola</div>
-                                <input type="text" class="form-control" name="school-name">
+                                <input type="text" class="form-control" name="school-name" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-addon" style="min-width: 72px;">Geslo</div>
-                                <input type="text" class="form-control" name="password">
+                                <input type="text" class="form-control" name="password" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon" style="min-width: 72px;">Geslo</div>
+                                <input type="text" class="form-control" name="password2" required>
                             </div>
                         </div>
                         <div class="form-group">
@@ -79,4 +85,12 @@
             </div>
         </div>
     </div>
+    <script>
+        $("form").submit(function() {
+            if ($('[name="password"]').val() != $('[name="password2"]').val()) {
+                alert("Gesli se ne ujemata!");
+                return false;
+            }
+        })
+    </script>
 @endsection

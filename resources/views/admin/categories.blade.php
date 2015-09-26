@@ -51,9 +51,17 @@
         <form action="{{ url('admin/add-category') }}" method="post">
             {!! csrf_field() !!}
             <div class="form-group">
-                <div class="input-group" style="float: left; width: 90%;">
+                <div class="input-group" style="float: left; width: 70%;">
                     <div class="input-group-addon" style="max-width: 130px;">Naslov kategorije</div>
                     <input type="text" class="form-control" name="category-name">
+                </div>
+                <div class="input-group" style="float: left; width: 15%;">
+                    <div class="input-group-addon" style="max-width: 130px;">Šola</div>
+                    <select type="text" class="form-control" name="school-type">
+                        <option value="-1">-- IZBERI --</option>
+                        <option value="0">Osnovna</option>
+                        <option value="1">Srednja</option>
+                    </select>
                 </div>
                 <button type="submit" class="btn btn-success" id="add-category" style="float: right;">Dodaj</button>
                 <div style="clear: both;"></div>
@@ -62,14 +70,14 @@
         <table class="table table-condensed" style="margin-top: 20px">
             <th>Ime kategorije</th>
             <th>Število testov</th>
-            <th>Profesor</th>
+            <th>Šola</th>
             <th style="text-align: right;">#</th>
 
             @foreach($categories as $category)
                 <tr>
                     <td>{{ $category->title }}</td>
                     <td>{{ count($category->exams) }}</td>
-                    <td>{{ $category->user != null ? $category->user->name.' '.$category->user->surname : 'Null' }}</td>
+                    <td>{{ $category->school_type == 0 ? 'Osnovna šola' : 'Srednja šola' }}</td>
                     <td align="right">
                         <a href="{{ url('admin/remove-category/'.$category->id) }}">Izbriši</a>
                         <a href="{{ url('admin/edit-category'.$category->id) }}">Uredi</a>
