@@ -10,6 +10,9 @@
 
         <div class="row">
             <div class="col-md-6">
+                <div class="well">
+                    V primeru, da stran obiskujete prvič, potrebujemo vaše podatke za prvi vpis. Prosimo da izpolnite spodnja polja in s tem ustvarite uporabniški račun.
+                </div>
                 <div class="">
                     <form class="form-group" action="{{ url('teachers/new-teacher') }}" method="post">
                         {!! csrf_field() !!}
@@ -59,11 +62,14 @@
                                 </select>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary" style="width: 100%;">Vstop</button>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Registracija</button>
                     </form>
                 </div>
             </div>
             <div class="col-md-6">
+                <div class="well">
+                    V primeru, da stran obiskujete prvič, potrebujemo vaše podatke za prvi vpis. Prosimo da izpolnite spodnja polja in s tem ustvarite uporabniški račun.
+                </div>
                 <div class="">
                     <form class="form-group" action="{{ url('teachers/existing-teacher') }}" method="post">
                         {!! csrf_field() !!}
