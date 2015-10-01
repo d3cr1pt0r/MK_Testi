@@ -115,7 +115,7 @@ class TeacherController extends Controller
 
         $data = ['codes' => array_unique($codes)];
 
-        Mail::send('emails.welcome', $data, function ($message) {
+        Mail::send('emails.welcome', $data, function ($message) use($category) {
             $message->from('mktesti@makeithappen.com', 'MK Tekmovanje');
 
             $message->to(Auth::user()->email);
