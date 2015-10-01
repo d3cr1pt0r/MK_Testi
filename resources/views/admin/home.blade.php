@@ -57,7 +57,7 @@
                 <th>Kategorija</th>
                 <th>Št. vprasanj</th>
                 <th>#</th>
-                <th><input type="checkbox" value=""></th>
+                <th>#</th>
 
                 @foreach($exams as $exam)
                     <tr>
@@ -67,7 +67,9 @@
                         <td>
                             <a href="{{ url('admin/remove-exam/'.$exam->id)  }}">Izbriši</a>
                         </td>
-                        <td><input type="checkbox" name="exam_ids[]" value="{{ $exam->id  }}"></td>
+                        <td>
+                            <a href="#!" class="edit" id="edit" exam-id="{{ $exam->id }}" book-id="{{ $exam->book->id }}" category-id="{{ $exam->category->id }}">Uredi</a>
+                        </td>
                     </tr>
                 @endforeach
             </table>
@@ -123,7 +125,7 @@
         <div class="container task-container" style="width: 100%; margin-bottom: 20px;">
             <div class="row">
                 <div class="col-md-10">
-                    <input type="text" class="form-control" id="task-title" style="border-color: #2EA5F7; background-color: #DCEAFF;" placeholder="Naslov naloge">
+                    <input type="text" class="form-control" id="task-title" style="border-color: #2EA5F7; background-color: #DCEAFF;" placeholder="Naslov naloge" data-value="title">
                 </div>
                 <div class="col-md-2" style="padding-right: 0;">
                     <a href="#!" style="color: #DC5353;"><span class="glyphicon glyphicon-remove remove-task" aria-hidden="true" style="float: right; display: block; padding-left: 14px; line-height: 33px;"></span></a>
@@ -138,7 +140,7 @@
         <div class="question-container" style="padding-left: 10px;">
             <div class="row" style="margin-top: 10px;">
                 <div class="col-md-10">
-                    <input type="text" class="form-control" id="question-title" style="border-color: #B42EF7; background-color: #ECDCFF;" placeholder="Vprašanje">
+                    <input type="text" class="form-control" id="question-title" style="border-color: #B42EF7; background-color: #ECDCFF;" placeholder="Vprašanje" data-value="title">
                 </div>
                 <div class="col-md-2" style="padding-right: 0;">
                     <a href="#!" style="color: #DC5353;"><span class="glyphicon glyphicon-remove remove-question" aria-hidden="true" style="float: right; display: block; padding-left: 14px; line-height: 33px;"></span></a>
@@ -155,7 +157,7 @@
         <div class="answer-container" style="padding-left: 10px;">
             <div class="row" style="margin-top: 10px;">
                 <div class="col-md-10">
-                    <input type="text" class="form-control" id="answer-title" style="border-color: #F7C32E; background-color: #FFFFDC;" placeholder="Odgovor">
+                    <input type="text" class="form-control" id="answer-title" style="border-color: #F7C32E; background-color: #FFFFDC;" placeholder="Odgovor" data-value="title">
                 </div>
                 <div class="col-md-2" style="padding-right: 0;">
                     <a href="#!" style="color: #DC5353;"><span class="glyphicon glyphicon-remove remove-answer" aria-hidden="true" style="float: right; display: block; padding-left: 14px; line-height: 33px;"></span></a>
@@ -167,11 +169,115 @@
 
     <script>
 
+        var EDIT_MODE = false;
+        var EXAM_ID = -1;
+
+        //////////////////////////////////////////////////////
+        //                Exam editing stuff                //
+        //////////////////////////////////////////////////////
+        function toggleAnswerCorrectState(element) {
+            if ($(element).hasClass("correct")) {
+                $(element).removeClass("correct");
+                $(element).css("color", "indianred");
+                $(element).removeAttr("correct");
+                $(element).attr("wrong", "");
+            }
+            else {
+                $(element).addClass("correct");
+                $(element).css("color", "#43B743");
+                $(element).removeAttr("wrong");
+                $(element).attr("correct", "");
+            }
+        }
+
+        function toggleQuestionTypeState(element) {
+            var question_type = $(element).attr("question-type");
+
+            if (question_type == 0) {
+                $(element).attr("question-type", 1);
+                $(element).text("Vnos");
+            }
+            if (question_type == 1) {
+                $(element).attr("question-type", 0);
+                $(element).text("Izbor");
+            }
+        }
+
+        $(".edit").click(function() {
+            var exam_id = $(this).attr("exam-id");
+            var book_id = $(this).attr("book-id");
+            var category_id = $(this).attr("category-id");
+
+            EDIT_MODE = true;
+            EXAM_ID = exam_id;
+
+            $("#exam-container").loadTemplate($("#exam-panel"), {}, {append: false});
+            $("#book-id").val(book_id);
+            $("#category-id").val(category_id);
+
+            $.get( "{{ url('admin/exam-json/') }}/" + exam_id, function( data ) {
+                data = JSON.parse(data)['tasks'];
+
+                for(var i=0;i<data.length;i++) {
+                    var task_id = data[i]['id'];
+                    var task_title = data[i]['title'];
+
+                    $("#exam-body").loadTemplate($("#exam-task"), {
+                        id: task_id,
+                        title: task_title
+                    }, {append: true});
+
+                    var task_container = $(".task-container")[i];
+                    $(task_container).find("#task-title").attr("data-id", task_id);
+
+                    for(var j=0;j<data[i]['questions'].length;j++) {
+                        var question_id = data[i]['questions'][j]['id'];
+                        var question_title = data[i]['questions'][j]['title'];
+                        var question_type = data[i]['questions'][j]['type'];
+                        var question_image = data[i]['questions'][j]['image_src'];
+
+                        $(task_container).loadTemplate($("#exam-question"), {
+                            id: question_id,
+                            title: question_title
+                        }, {append: true});
+
+                        var question_container = $(task_container).find(".question-container")[j];
+                        $(question_container).find("#question-title").attr("data-id", question_id);
+
+                        if(question_type) {
+                            toggleQuestionTypeState($(question_container).find(".question-type"));
+                        }
+
+                        for(var k=0;k<data[i]['questions'][j]['answers'].length;k++) {
+                            var answer_id = data[i]['questions'][j]['answers'][k]['id'];
+                            var answer_title = data[i]['questions'][j]['answers'][k]['title'];
+                            var answer_correct = data[i]['questions'][j]['answers'][k]['correct'];
+
+                            $(question_container).loadTemplate($("#exam-answer"), {
+                                id: answer_id,
+                                title: answer_title
+                            }, {append: true});
+
+                            var answer_container = $(question_container).find(".answer-container")[k];
+                            $(answer_container).find("#answer-title").attr("data-id", answer_id);
+
+                            if(!answer_correct) {
+                                toggleAnswerCorrectState($(answer_container).find(".answer-state"));
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+
         //////////////////////////////////////////////////////
         // Events for adding/removing questions and answers //
         //////////////////////////////////////////////////////
 
         $("#add-exam").click(function() {
+            EDIT_MODE = false;
+            EXAM_ID = -1;
             $("#exam-container").loadTemplate($("#exam-panel"), {}, {append: false});
         });
 
@@ -188,31 +294,11 @@
         });
 
         $("body").on("click", ".answer-state", function() {
-            if ($(this).hasClass("correct")) {
-                $(this).removeClass("correct");
-                $(this).css("color", "indianred");
-                $(this).removeAttr("correct");
-                $(this).attr("wrong", "");
-            }
-            else {
-                $(this).addClass("correct");
-                $(this).css("color", "#43B743");
-                $(this).removeAttr("wrong");
-                $(this).attr("correct", "");
-            }
+            toggleAnswerCorrectState($(this));
         });
 
         $("body").on("click", ".question-type", function() {
-            var question_type = $(this).attr("question-type");
-
-            if (question_type == 0) {
-                $(this).attr("question-type", 1);
-                $(this).text("Vnos");
-            }
-            if (question_type == 1) {
-                $(this).attr("question-type", 0);
-                $(this).text("Izbor");
-            }
+            toggleQuestionTypeState($(this));
         });
 
         $("body").on("click", ".remove-task", function() {
@@ -234,7 +320,7 @@
         });
 
         $("body").on("click", ".add-image", function() {
-            console.log($(this).parent().parent().closest(".file-input"));
+            //console.log($(this).parent().parent().closest(".file-input"));
         });
 
         $("body").on("change", ".file-input", function() {
@@ -267,20 +353,23 @@
             var exam = {};
 
             $.each($(".task-container"), function(i, val) {
+                var task_id = $(this).find("#task-title").attr("data-id");
                 var task_title = $(this).find("#task-title").val();
 
-                exam[i] = {'task_title': task_title, 'questions': []}
+                exam[i] = {'id': task_id, 'task_title': task_title, 'questions': []}
                 $.each($(this).find(".question-container"), function(j, val2) {
+                    var question_id = $(this).find("#question-title").attr("data-id");
                     var question_title = $(this).find("#question-title").val();
                     var question_image = $(this).find(".file-input").val() != "";
                     var question_type = $(this).find(".question-type").attr("question-type");
 
-                    exam[i]['questions'][j] = {'question_title': question_title, 'question_has_image': question_image, 'question_type': question_type, 'answers': []};
+                    exam[i]['questions'][j] = {'id': question_id, 'question_title': question_title, 'question_has_image': question_image, 'question_type': question_type, 'answers': []};
                     $.each($(this).find(".answer-container"), function(k, val3) {
+                        var answer_id = $(this).find("#answer-title").attr("data-id");
                         var answer_title = $(this).find("#answer-title").val();
                         var answer_correct = $(this).find("#answer_state").attr("correct") !== undefined;
 
-                        exam[i]['questions'][j]['answers'][k] = {'answer_title': answer_title, 'correct': answer_correct};
+                        exam[i]['questions'][j]['answers'][k] = {'id': answer_id, 'answer_title': answer_title, 'correct': answer_correct};
                     });
                 });
             });
@@ -290,7 +379,7 @@
 
         function progressHandlingFunction(e){
             if(e.lengthComputable) {
-                console.log(e.loaded / e.total);
+                //console.log(e.loaded / e.total);
             }
         }
 
@@ -303,6 +392,9 @@
             if (status) {
                 location.reload();
             }
+            else {
+                alert(JSON.parse(data)['message']);
+            }
         }
 
         function errorHandler() {
@@ -310,11 +402,15 @@
         }
 
         $("body").on("click", "#save-exam", function() {
-            var exam_object = {};
+            var exam_object =
+            {
+                edit: EDIT_MODE,
+                id: EXAM_ID,
+                book_id: getBookId(),
+                category_id: getCategoryId(),
+                exam_tasks: getExamQuestionsAndAnswers()
+            };
 
-            exam_object['book_id'] = getBookId();
-            exam_object['category_id'] = getCategoryId();
-            exam_object['exam_tasks'] = getExamQuestionsAndAnswers();
             exam_object = JSON.stringify(exam_object);
 
             var form_data = new FormData($('form')[0]);

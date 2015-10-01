@@ -61,8 +61,8 @@ class ExamHelper
         return $category;
     }
 
-    static public function createExam($book, $category) {
-        $exam = new Exam;
+    static public function createExam($book, $category, $id=null) {
+        $exam = $id == null ? new Exam : Exam::findOrFail($id);
         $exam->book()->associate($book);
         $exam->category()->associate($category);
         $exam->save();
@@ -70,8 +70,8 @@ class ExamHelper
         return $exam;
     }
 
-    static public function createTask($exam, $title) {
-        $task = new Task;
+    static public function createTask($exam, $title, $id=null) {
+        $task = $id == null ? new Task : Task::findOrFail($id);
         $task->title = $title;
         $task->exam()->associate($exam);
         $task->save();
@@ -79,8 +79,8 @@ class ExamHelper
         return $task;
     }
 
-    static public function createQuestion($task, $title, $type, $image_src='') {
-        $question = new Question;
+    static public function createQuestion($task, $title, $type, $image_src='', $id=null) {
+        $question = $id == null ? new Question : Question::findOrFail($id);
         $question->title = $title;
         $question->type = $type;
         $question->image_src = $image_src;
@@ -90,8 +90,8 @@ class ExamHelper
         return $question;
     }
 
-    static public function createAnswer($question, $title, $correct) {
-        $answer = new Answer;
+    static public function createAnswer($question, $title, $correct, $id=null) {
+        $answer = $id == null ? new Answer : Answer::findOrFail($id);
         $answer->title = $title;
         $answer->correct = $correct;
         $answer->question()->associate($question);
@@ -161,17 +161,19 @@ class ExamHelper
 
     static public function saveFile($file, $folder)
     {
+        $file_ext = ".".$file->guessExtension();
+        $base_path = base_path();
+        $sub_path = "/public/".$folder;
+        $path = $base_path.$sub_path;
+        $destination_name = uniqid().$file_ext;
+
         try {
-            $file_ext = ".".$file->guessExtension();
-            $base_path = base_path();
-            $sub_path = "/public/".$folder;
-            $path = $base_path.$sub_path;
-            $destination_name = uniqid().$file_ext;
             $file->move($path, $destination_name);
-            return ["relative_path" => $folder, "absolute_path" => $path, "file_name" => $destination_name];
         } catch (Exception $e) {
-            return false;
+
         }
+
+        return ["relative_path" => $folder, "absolute_path" => $path, "file_name" => $destination_name];
     }
 
     static public function getExamResults($result) {
@@ -227,50 +229,49 @@ class ExamHelper
         return ['results' => $results, 'score' => ($score_total / $questions_total) * 100];
     }
 
-    static public function addExam($request)
+    // TODO: Take care of deleted tasks/questions/answers (check which ids have been modified and which not)
+    static public function addExam($exam_object, $images)
     {
-        $exam_object = $request->input('exam_data');
-        $exam_object = json_decode($exam_object);
-
+        $exam_id = $exam_object->id != -1 ? $exam_object->id : null;
         $book_id = $exam_object->book_id;
         $category_id = $exam_object->category_id;
 
         $exam_tasks = $exam_object->exam_tasks;
 
-        $exam = ExamHelper::createExam(Book::findOrFail($book_id), Category::findOrFail($category_id));
+        $exam = ExamHelper::createExam(Book::findOrFail($book_id), Category::findOrFail($category_id), $exam_id);
 
         foreach ($exam_tasks as $k=>$t) {
+            $task_id = property_exists($t, 'id') ? $t->id : null;
             $task_title = $t->task_title;
             $questions = $t->questions;
             $images_found = 0;
 
-            $task = ExamHelper::createTask($exam, $task_title);
+            $task = ExamHelper::createTask($exam, $task_title, $task_id);
 
             foreach($questions as $k=>$q) {
+                $question_id = property_exists($q, 'id') ? $q->id : null;
                 $question_title = $q->question_title;
                 $question_has_image = $q->question_has_image;
                 $question_type = intval($q->question_type);
                 $answers = $q->answers;
 
+                $image_src = '';
                 if ($question_has_image) {
-                    $image_file = $request->file()['images'][$images_found];
-                    $image_src = ExamHelper::saveFile($image_file, "/assets/uploads/");
-
-                    if ($image_src != false)
-                        $question = ExamHelper::createQuestion($task, $question_title, $question_type, $image_src["relative_path"].$image_src["file_name"]);
-                    else
-                        $question = ExamHelper::createQuestion($task, $question_title, $question_type);
+                    $image_file = $images[$images_found];
+                    $image_status = ExamHelper::saveFile($image_file, "/assets/uploads/");
+                    $image_src = $image_status == false ? '' : $image_status["relative_path"].$image_status["file_name"];
                 }
-                else
-                    $question = ExamHelper::createQuestion($task, $question_title, $question_type);
+
+                $question = ExamHelper::createQuestion($task, $question_title, $question_type, $image_src, $question_id);
 
                 $images_found++;
 
                 foreach ($answers as $k=>$a) {
+                    $answer_id = property_exists($a, 'id') ? $a->id : null;
                     $answer_title = $a->answer_title;
                     $answer_correct = $a->correct;
 
-                    $answer = ExamHelper::createAnswer($question, $answer_title, $answer_correct);
+                    $answer = ExamHelper::createAnswer($question, $answer_title, $answer_correct, $answer_id);
                 }
             }
         }

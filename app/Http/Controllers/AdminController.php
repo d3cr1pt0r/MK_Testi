@@ -166,7 +166,7 @@ class AdminController extends Controller
         $user = ExamHelper::createUser($name, $surname, '', 0, $email, $password, $user_type);
 
         if($user)
-            return Redirect::back()->with('response_status', ['success' => true, 'message' => $user->name.' '.$user->surname.' added!']);
+            return Redirect::back()->with('response_status', ['success' => true, 'message' => $name.' '.$surname.' added!']);
         return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Failed to add new user!']);
     }
 
@@ -206,8 +206,36 @@ class AdminController extends Controller
 
     public function postAddExam(Request $request)
     {
-        ExamHelper::addExam($request);
-        return json_encode(['status' => true, 'message' => 'Exam saved']);
+        $exam_object = $request->input('exam_data');
+        $exam_object = json_decode($exam_object);
+        $exam_images = array_key_exists('images', $request->file()) ? $request->file()['images'] : null;
+
+        $status = ExamHelper::addExam($exam_object, $exam_images);
+
+        return $status;
+    }
+
+    public function getExamJson($id) {
+        $exam_json = ['tasks' => []];
+        $exam = Exam::findOrFail($id);
+        $i = 0;
+
+        foreach($exam->tasks as $task) {
+            $exam_json['tasks'][$i] = ['id' => $task->id, 'title' => $task->title, 'questions' => []];
+            $j = 0;
+            foreach($task->questions as $question) {
+                $exam_json['tasks'][$i]['questions'][$j] = ['id' => $question->id, 'title' => $question->title, 'type' => $question->type, 'image_src' => $question->image_src, 'answers' => []];
+                $k = 0;
+                foreach($question->answers as $answer) {
+                    $exam_json['tasks'][$i]['questions'][$j]['answers'][$k] = ['id' => $answer->id, 'title' => $answer->title, 'correct' => $answer->correct];
+                    $k++;
+                }
+                $j++;
+            }
+            $i++;
+        }
+
+        return json_encode($exam_json);
     }
 
 }

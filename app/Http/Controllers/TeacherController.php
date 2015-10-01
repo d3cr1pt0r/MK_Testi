@@ -95,6 +95,7 @@ class TeacherController extends Controller
 
     public function postGenerateCodesCategory(Request $request) {
         $category_id = $request->input('category_id');
+        $category = Category::findOrFail($category_id);
         $num_codes = $request->input('num_codes');
         $exams = Category::find($category_id)->exams;
         $codes = [];
@@ -112,16 +113,14 @@ class TeacherController extends Controller
         $user->generated = 1;
         $user->save();
 
-        /*
         $data = ['codes' => array_unique($codes)];
 
         Mail::send('emails.welcome', $data, function ($message) {
             $message->from('mktesti@makeithappen.com', 'MK Tekmovanje');
 
             $message->to(Auth::user()->email);
-            $message->subject('Šifre za test');
+            $message->subject('Šifre za '.$category->title);
         });
-        */
 
         return "OK";
         //return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Generated '.$num_codes.' codes for '.count($exams).' exams!']);

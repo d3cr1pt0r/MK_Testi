@@ -12,7 +12,7 @@
 
         @foreach($exams as $exam)
             <tr>
-                <td><a href="{{ url('/exam/'.base64_encode($exam['exam']->id.':'.$code))  }}">{{ $exam['exam']->title }}</a></td>
+                <td><a href="{{ url('/exam/'.base64_encode($exam['exam']->id.':'.$code))  }}">{{ $exam['exam']->book->title }}</a></td>
                 <td>{{ count($exam['exam']->questions()) }}</td>
                 <td>None</td>
                 <td style="color: {{ $exam['results']['score'] < 50 ? $exam['exam']->used ? 'red' : 'green' : 'green' }}">{{ $exam['exam']->used ? number_format($exam['results']['score'], 1).'%' : "Open" }}</td>

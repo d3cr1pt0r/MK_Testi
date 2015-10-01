@@ -90,7 +90,12 @@
             <th>Ime</th>
             <th>Priimek</th>
             <th>E-mail</th>
+            <th>Šola</th>
+            <th>Tip šole</th>
             <th>Tip uporabnika</th>
+            <th>Datum registracije</th>
+            <th>Število šifer</th>
+            <th style="text-align: right;">Generiranje</th>
             <th style="text-align: right;">#</th>
 
             @foreach($users as $user)
@@ -98,7 +103,12 @@
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->surname }}</td>
                     <td>{{ $user->email }}</td>
+                    <td>{{ $user->school_name }}</td>
+                    <td>{{ $user->school_type == 0 ? 'Osnovna' : 'Srednja' }}</td>
                     <td>{{ $user->user_type == 0 ? 'Administrator' : 'Profesor' }}</td>
+                    <td>{{ $user->created_at->format('d.m.Y [H:i:s]') }}</td>
+                    <td>{{ $user->totalGeneratedCodes() }}</td>
+                    <td>{{ $user->generated == 0 ? 'Neomogočeno' : 'Omogočeno' }}</td>
                     <td align="right">
                         <a href="{{ url('admin/remove-user/'.$user->id) }}">Izbriši</a>
                         <a href="{{ url('admin/edit-user'.$user->id) }}">Uredi</a>

@@ -16,7 +16,7 @@ class AuthAdmin
 
     public function handle($request, Closure $next)
     {
-        if ($this->auth->user()->user_type != 0)
+        if ($this->auth->user() != null && $this->auth->user()->user_type != 0)
             return redirect()->guest('admin/login');
         if ($this->auth->guest()) {
             if ($request->ajax()) {

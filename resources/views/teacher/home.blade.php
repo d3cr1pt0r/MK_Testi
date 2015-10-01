@@ -29,7 +29,7 @@
 
     <div class="container">
         <div class="well">
-            V spodnja polja vpišite število učencev, ki jih želite prijaviti na tekmovanje BOOKWORMS za vsak razred posebej. Ko bodo šifre generirane, boste dobili seznam na vašo elektronsko pošto. S šiframi, ki vam bodo poslane na elektronsko pošto bodo lahko učenci dostopali do tekmovanja oziroma testov.
+            V spodnja polja vpišite število učencev, ki jih želite prijaviti na tekmovanje BOOKWORMS - za vsak razred posebej. Ko bodo šifre ustvarjene, boste prejeli seznam na vaš elektronski naslov. S šiframi, ki jih boste prejeli, bodo vaši učenci lahko - v času tekmovanja seveda (ne prej in ne kasneje) - dostopali do testov/vprašalnikov.
         </div>
         <div class="well">
             <h3 style="margin-top: 0; margin-bottom: 25px;">Kategorije</h3>

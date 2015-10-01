@@ -5,13 +5,13 @@
         @include('admin.parts.messages')
 
         <div class="page-header">
-            <h1>Vstop za učitelje in profesorje</h1>
+            <h1>Vstop za mentorje</h1>
         </div>
 
         <div class="row">
             <div class="col-md-6">
                 <div class="well">
-                    V primeru, da stran obiskujete prvič, potrebujemo vaše podatke za prvi vpis. Prosimo da izpolnite spodnja polja in s tem ustvarite uporabniški račun.
+                    V primeru, da stran obiskujete prvič, potrebujemo vaše podatke za prvi vpis. Prosimo, da izpolnite spodnja polja in s tem ustvarite uporabniški račun.
                 </div>
                 <div class="">
                     <form class="form-group" action="{{ url('teachers/new-teacher') }}" method="post">
@@ -68,7 +68,7 @@
             </div>
             <div class="col-md-6">
                 <div class="well">
-                    V primeru, da stran obiskujete prvič, potrebujemo vaše podatke za prvi vpis. Prosimo da izpolnite spodnja polja in s tem ustvarite uporabniški račun.
+                    Vstop za že registrirane mentorje: V primeru, da ste v sistem že vpisani, vnesite vašo elektronsko pošto in izbrano geslo.
                 </div>
                 <div class="">
                     <form class="form-group" action="{{ url('teachers/existing-teacher') }}" method="post">

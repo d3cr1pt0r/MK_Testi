@@ -42,4 +42,9 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         return $this->hasMany('MKTests\Result', 'user_id');
     }
+
+    public function totalGeneratedCodes()
+    {
+        return count($this->results);
+    }
 }
