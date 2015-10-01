@@ -16,7 +16,14 @@ class DatabaseSeeder extends Seeder
             'name' => 'Klemen',
             'surname' => 'Brajkovič',
             'email' => 'd3cr1pt0r@gmail.com',
-            'password' => Hash::make('caffeine'),
+            'password' => Hash::make('makeithappen'),
+        ]);
+
+        DB::table('users')->insert([
+            'name' => 'Rok',
+            'surname' => 'Kompan',
+            'email' => 'rok.kompan@gmail.com',
+            'password' => Hash::make('makeithappen'),
         ]);
     }
 }
