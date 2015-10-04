@@ -137,6 +137,14 @@ class AdminController extends Controller
         return Redirect::back()->with('response_status', ['success' => true, 'message' => $code.' was reset!']);
     }
 
+    public function getToggleGenerated($id) {
+        $user = User::findOrFail($id);
+        $user->generated = !$user->generated;
+        $user->save();
+
+        return Redirect::back();
+    }
+
     public function postAddBook(Request $request) {
         $title = $request->input('book-name');
         $book = ExamHelper::createBook($title);

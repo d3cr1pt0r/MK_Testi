@@ -126,6 +126,42 @@ class TeacherController extends Controller
         //return Redirect::back()->with('response_status', ['success' => true, 'message' => 'Generated '.$num_codes.' codes for '.count($exams).' exams!']);
     }
 
+    public function postGenerateCodesCategoryAll(Request $request) {
+        $data = array_filter($request->input('data'));
+
+        foreach($data as $key=>$val) {
+            $category_id = $key;
+            $category = Category::findOrFail($category_id);
+            $num_codes = $val;
+            $exams = Category::find($category_id)->exams;
+            $codes = [];
+
+            for ($i=0;$i<$num_codes;$i++) {
+                $uid = ExamHelper::generateUID();
+
+                foreach($exams as $exam) {
+                    ExamHelper::createResult($exam, Auth::user(), $uid, false);
+                    $codes[] = $uid;
+                }
+            }
+
+            $user = User::find(Auth::user()->id);
+            $user->generated = 1;
+            $user->save();
+
+            $data = ['codes' => array_unique($codes)];
+
+            Mail::send('emails.welcome', $data, function ($message) use($category) {
+                $message->from('mktesti@makeithappen.com', 'MK Tekmovanje');
+
+                $message->to(Auth::user()->email);
+                $message->subject('Šifre za '.$category->title);
+            });
+        }
+
+        return "OK";
+    }
+
     public function postGenerateCodesExam(Request $request) {
         $exam_id = $request->input('exam-id');
         $num_codes = $request->input('num-codes');

@@ -108,7 +108,13 @@
                     <td>{{ $user->user_type == 0 ? 'Administrator' : 'Profesor' }}</td>
                     <td>{{ $user->created_at->format('d.m.Y [H:i:s]') }}</td>
                     <td>{{ $user->totalGeneratedCodes() }}</td>
-                    <td>{{ $user->generated == 0 ? 'Neomogočeno' : 'Omogočeno' }}</td>
+                    <td>
+                        @if ($user->generated == 1)
+                            <a href="{{ url('admin/toggle-generated/'.$user->id) }}"><span class="label label-danger">Onemogočeno</span></a>
+                        @else
+                            <a href="{{ url('admin/toggle-generated/'.$user->id) }}"><span class="label label-success">Omogočeno</span></a>
+                        @endif
+                    </td>
                     <td align="right">
                         <a href="{{ url('admin/remove-user/'.$user->id) }}">Izbriši</a>
                         <a href="{{ url('admin/edit-user'.$user->id) }}">Uredi</a>

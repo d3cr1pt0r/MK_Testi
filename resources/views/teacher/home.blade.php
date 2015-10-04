@@ -43,7 +43,7 @@
                     <tr>
                         <td><a href="{{ url('teachers/category/'.$category->id) }}">{{ $category->title }}</a></td>
                         <td>{{ count($category->exams) }}</td>
-                        @if(!$category->hasUserGenerated())
+                        @if(!$category->hasUserGenerated() || Auth::user()->generated == 0)
                             <td style="text-align: right;">
                                 <input type="hidden" name="category-id" value="{{ $category->id }}">
                                 <input type="text" name="num-codes" style="">
@@ -57,6 +57,7 @@
                     </tr>
                 @endforeach
             </table>
+            <button type="submit" class="btn btn-success full-width generate-codes-all">Generiraj vse</button>
         </div>
     </div>
 
@@ -85,14 +86,41 @@
         })
 
         $.post( "{{ url('teachers/generate-codes-category') }}", { _token: "{{ csrf_token() }}", category_id: c_id, num_codes: num_codes })
-            .done(function( data ) {
-                if (data == "OK") {
-                    location.reload();
-                }
-                else {
-                    alert("Failed to generate codes. Contact developers!");
-                }
-            });
+                .done(function( data ) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                    else {
+                        alert("Failed to generate codes. Contact developers!");
+                    }
+                });
+    });
+
+    $(".generate-codes-all").click(function() {
+        var category_ids = $('[name="category-id"]');
+        var num_codes = $('[name="num-codes"]');
+
+        var data = [];
+
+        for(var i=0;i<category_ids.length;i++) {
+            data[$(category_ids[i]).val()] = $(num_codes[i]).val();
+            console.log($(category_ids[i]).val() + " " + $(num_codes[i]).val());
+        }
+
+        $('#myModal').modal({
+            backdrop: 'static',
+            keyboard: false
+        })
+
+        $.post( "{{ url('teachers/generate-codes-category-all') }}", { _token: "{{ csrf_token() }}", data: data })
+                .done(function( data ) {
+                    if (data == "OK") {
+                        location.reload();
+                    }
+                    else {
+                        alert("Failed to generate codes. Contact developers!");
+                    }
+                });
     });
 </script>
 @endsection
