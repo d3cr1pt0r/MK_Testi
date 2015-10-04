@@ -149,4 +149,5 @@ class TeacherController extends Controller
 
         return $view;
     }
+
 }

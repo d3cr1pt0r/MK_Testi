@@ -17,4 +17,12 @@ class Task extends Model
     {
     	return $this->hasMany('MKTests\Question', 'task_id');
     }
+
+    public function questionIds()
+    {
+        $ids = [];
+        foreach($this->questions as $question)
+            $ids[] = $question->id;
+        return $ids;
+    }
 }

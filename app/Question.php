@@ -26,4 +26,12 @@ class Question extends Model
         }
         return $answers;
     }
+
+    public function answerIds()
+    {
+        $ids = [];
+        foreach($this->answers as $answer)
+            $ids[] = $answer->id;
+        return $ids;
+    }
 }

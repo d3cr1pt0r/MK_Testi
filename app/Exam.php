@@ -56,4 +56,12 @@ class Exam extends Model
         return $this->results()->where('used', false)->where('user_id', Auth::user()->id)->get();
     }
 
+    public function taskIds()
+    {
+        $ids = [];
+        foreach($this->tasks as $task)
+            $ids[] = $task->id;
+        return $ids;
+    }
+
 }

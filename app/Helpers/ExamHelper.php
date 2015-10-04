@@ -232,6 +232,10 @@ class ExamHelper
     // TODO: Take care of deleted tasks/questions/answers (check which ids have been modified and which not)
     static public function addExam($exam_object, $images)
     {
+        $task_ids = [];
+        $question_ids = [];
+        $answer_ids = [];
+
         $exam_id = $exam_object->id != -1 ? $exam_object->id : null;
         $book_id = $exam_object->book_id;
         $category_id = $exam_object->category_id;
@@ -239,6 +243,7 @@ class ExamHelper
         $exam_tasks = $exam_object->exam_tasks;
 
         $exam = ExamHelper::createExam(Book::findOrFail($book_id), Category::findOrFail($category_id), $exam_id);
+        $task_existing_ids = $exam->taskIds();
 
         foreach ($exam_tasks as $k=>$t) {
             $task_id = property_exists($t, 'id') ? $t->id : null;
@@ -246,7 +251,11 @@ class ExamHelper
             $questions = $t->questions;
             $images_found = 0;
 
+            if ($task_id != null)
+                $task_ids[] = $task_id;
+
             $task = ExamHelper::createTask($exam, $task_title, $task_id);
+            $question_existing_ids = $task->questionIds();
 
             foreach($questions as $k=>$q) {
                 $question_id = property_exists($q, 'id') ? $q->id : null;
@@ -254,6 +263,9 @@ class ExamHelper
                 $question_has_image = $q->question_has_image;
                 $question_type = intval($q->question_type);
                 $answers = $q->answers;
+
+                if ($question_id != null)
+                    $question_ids[] = $question_id;
 
                 $image_src = '';
                 if ($question_has_image) {
@@ -263,7 +275,7 @@ class ExamHelper
                 }
 
                 $question = ExamHelper::createQuestion($task, $question_title, $question_type, $image_src, $question_id);
-
+                $answer_existing_ids = $question->answerIds();
                 $images_found++;
 
                 foreach ($answers as $k=>$a) {
@@ -271,10 +283,28 @@ class ExamHelper
                     $answer_title = $a->answer_title;
                     $answer_correct = $a->correct;
 
+                    if ($answer_id != null)
+                        $answer_ids[] = $answer_id;
+
                     $answer = ExamHelper::createAnswer($question, $answer_title, $answer_correct, $answer_id);
                 }
+
+                // Delete unsibmitted answers
+                $answer_unsibmitted_ids = array_diff($answer_existing_ids, $answer_ids);
+                foreach($answer_unsibmitted_ids as $id)
+                    Answer::findOrFail($id)->delete();
             }
+
+            // Delete unsibmitted questions
+            $question_unsibmitted_ids = array_diff($question_existing_ids, $question_ids);
+            foreach($question_unsibmitted_ids as $id)
+                Question::findOrFail($id)->delete();
         }
+
+        // Delete unsibmitted tasks
+        $task_unsibmitted_ids = array_diff($task_existing_ids, $task_ids);
+        foreach($task_unsibmitted_ids as $id)
+            Task::findOrFail($id)->delete();
 
         return json_encode(['status' => true, 'message' => 'Exam saved']);
     }
