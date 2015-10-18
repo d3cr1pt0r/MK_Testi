@@ -37,12 +37,14 @@
             <table class="table table-bordered">
                 <th>Ime kategorije</th>
                 <th>Število testov</th>
+                <th>Število šifer</th>
                 <th style="text-align: right;">Generiranje</th>
 
                 @foreach($categories as $category)
                     <tr>
                         <td><a href="{{ url('teachers/category/'.$category->id) }}">{{ $category->title }}</a></td>
                         <td>{{ count($category->exams) }}</td>
+                        <td>{{ $category->numberOfGeneratedCodes() }}</td>
                         @if(!$category->hasUserGenerated() || Auth::user()->generated == 0)
                             <td style="text-align: right;">
                                 <input type="hidden" name="category-id" value="{{ $category->id }}">

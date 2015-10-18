@@ -47,4 +47,18 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     {
         return count($this->results);
     }
+
+    public function totalGeneratedCodesByCategory()
+    {
+        $map = [];
+        foreach($this->results as $result) {
+            $category_title = $result->exam->category->title;
+            if (!array_key_exists($category_title, $map)) {
+                $map[$category_title] = 0;
+            }
+            $map[$category_title]++;
+        }
+
+        return $map;
+    }
 }

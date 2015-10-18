@@ -28,7 +28,7 @@ class Result extends Model
 
     public function getResults()
     {
-        return ExamHelper::getExamResults($this);
+        return ExamHelper::getExamResults2($this);
     }
-
+    
 }

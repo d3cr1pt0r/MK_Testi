@@ -5,9 +5,14 @@
     <div class="container">
         @include('admin.parts.messages')
 
+        <div class="well" style="margin-top: 20px;">
+            <h2>Spletno tekmovanje Bookworms</h2>
+            V okno vpiši šifro za vstop na tekmovanje.
+        </div>
+
         <div class="form-group" style="float: left; width: 90%;">
             <div class="input-group">
-                <div class="input-group-addon">Enter code</div>
+                <div class="input-group-addon">Šifra</div>
                 <input type="text" class="form-control" name="code">
             </div>
         </div>

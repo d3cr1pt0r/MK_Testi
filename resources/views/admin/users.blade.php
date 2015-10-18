@@ -107,7 +107,11 @@
                     <td>{{ $user->school_type == 0 ? 'Osnovna' : 'Srednja' }}</td>
                     <td>{{ $user->user_type == 0 ? 'Administrator' : 'Profesor' }}</td>
                     <td>{{ $user->created_at->format('d.m.Y [H:i:s]') }}</td>
-                    <td>{{ $user->totalGeneratedCodes() }}</td>
+                    <td>
+                        @foreach($user->totalGeneratedCodesByCategory() as $category=>$num_codes)
+                            <p>{{$category.': '.$num_codes}}</p>
+                        @endforeach
+                    </td>
                     <td>
                         @if ($user->generated == 1)
                             <a href="{{ url('admin/toggle-generated/'.$user->id) }}"><span class="label label-danger">Onemogočeno</span></a>
@@ -116,13 +120,19 @@
                         @endif
                     </td>
                     <td align="right">
-                        <a href="{{ url('admin/remove-user/'.$user->id) }}">Izbriši</a>
-                        <a href="{{ url('admin/edit-user'.$user->id) }}">Uredi</a>
+                        <a class="delete-user" href="{{ url('admin/remove-user/'.$user->id) }}">Izbriši</a>
                     </td>
                 </tr>
             @endforeach
         </table>
     </div>
 </div>
+
+<script>
+    $(".delete-user").click(function(e) {
+        if(!confirm("Remove user?"))
+            e.preventDefault();
+    });
+</script>
 
 @endsection

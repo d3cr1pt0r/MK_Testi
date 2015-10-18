@@ -226,10 +226,38 @@ class ExamHelper
 
         if ($questions_total == 0)
             return ['results' => $results, 'score' => 0];
+        //dd($results);
         return ['results' => $results, 'score' => ($score_total / $questions_total) * 100];
     }
 
-    // TODO: Take care of deleted tasks/questions/answers (check which ids have been modified and which not)
+    static public function getExamResults2($result) {
+        $results = [];
+        $score_total = 0;
+        $questions_total = count($result->exam->questions());
+
+        $question_group = [];
+
+        foreach($result->question_answers as $qa) {
+            $question_id = $qa->question->id;
+            $question_group[$question_id][] = $qa;
+        }
+
+        foreach($question_group as $question_id=>$question) {
+            $q = Question::find($question_id);
+
+            foreach($q->answers as $answer) {
+                if ($answer->title == $qa->answer) {
+                    $score_total++;
+                    break;
+                }
+            }
+
+            $results[$q->id] = ['question' => $question];
+        }
+        //dd($results);
+        return ['results' => $results, 'questions_total' => $questions_total, 'questions_correct' => $score_total];
+    }
+
     static public function addExam($exam_object, $images)
     {
         $task_ids = [];
@@ -272,6 +300,11 @@ class ExamHelper
                     $image_file = $images[$images_found];
                     $image_status = ExamHelper::saveFile($image_file, "/assets/uploads/");
                     $image_src = $image_status == false ? '' : $image_status["relative_path"].$image_status["file_name"];
+                }
+                else {
+                    if ($question_id != null && Question::findOrFail($question_id)->title == $question_title) {
+                        $image_src = Question::findOrFail($question_id)->image_src;
+                    }
                 }
 
                 $question = ExamHelper::createQuestion($task, $question_title, $question_type, $image_src, $question_id);

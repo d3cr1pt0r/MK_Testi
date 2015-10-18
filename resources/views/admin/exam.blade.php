@@ -60,8 +60,8 @@
 		</form>
 
 		@foreach($exam->results as $result)
-			<a href="{{ url('code/'.$result->code) }}"><span style="float: left; width: 100px; color: {{ $result->used ? $result->getResults()['score'] < 50 ? 'red' : 'green' : 'blue' }}">{{ $result->code }}</span></a>
-			<span style="float: left; width: 70px; color: {{ $result->used ? $result->getResults()['score'] < 50 ? 'red' : 'green' : 'blue' }}">{{ number_format($result->getResults()['score'], 1).'%' }}</span>
+			<a href="{{ url('code/'.$result->code) }}"><span style="float: left; width: 100px; color: {{ $result->used ? $result->getResults()['questions_correct'] < $result->getResults()['questions_total'] ? 'red' : 'green' : 'blue' }}">{{ $result->code }}</span></a>
+			<span style="float: left; width: 180px; color: {{ $result->used ? $result->getResults()['questions_correct'] < $result->getResults()['questions_total'] / 2 ? 'red' : 'green' : 'blue' }}">{{ 'Pravilni/Nepravilni: '.$result->getResults()['questions_correct'].'/'.$result->getResults()['questions_total'] }}</span>
 			<a href="{{ url('admin/remove-code/'.$result->id)  }}" style="float: left; margin-left: 5px;">Remove</a>
 			<a href="{{ url('admin/reset-code/'.$result->id)  }}" style="float: left; margin-left: 15px;">Reset</a>
 			<div style="clear: left;"></div>
@@ -83,7 +83,17 @@
 							<a href="#" class="thumbnail">
 								<img src="{{ URL::asset($question->image_src) }}">
 							</a>
-							<input type="text" style="width: 100%;">
+							@if($question->type == 0)
+								@foreach($question->answers as $answer)
+									<div class="checkbox" style="padding-left: 5px;">
+										<label>
+											<input type="checkbox" value=""> {{ $answer->title }}
+										</label>
+									</div>
+								@endforeach
+							@elseif ($question->type == 1)
+								<input type="text" style="width: 100%;" value="">
+							@endif
 						</div>
 					@else
 						<div style="padding-left: 30px;">
@@ -97,7 +107,7 @@
 									</div>
 								@endforeach
 							@elseif ($question->type == 1)
-								<input type="text" value="">
+								<input type="text" style="width: 100%;" value="">
 							@endif
 						</div>
 					@endif

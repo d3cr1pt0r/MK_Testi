@@ -31,7 +31,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-addon" style="min-width: 72px;">Email</div>
-                                <input type="text" class="form-control" name="email" required>
+                                <input type="email" class="form-control" name="email" required>
                             </div>
                         </div>
                         <div class="form-group">
@@ -76,7 +76,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-addon">Email</div>
-                                <input type="text" class="form-control" name="email">
+                                <input type="email" class="form-control" name="email">
                             </div>
                         </div>
                         <div class="form-group">

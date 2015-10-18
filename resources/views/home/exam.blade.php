@@ -7,9 +7,7 @@
 
 	<div class="panel panel-default" style="margin-top: 20px;">
 		<div class="panel-heading">
-			<span style="display: block; float: left; font-size: 22px;">{{ $exam->title }}</span>
-			<input type="text" class="form-control" name="name" placeholder="Surname" style="float: right; width: 130px; margin-left: 5px;">
-			<input type="text" class="form-control" name="surname" placeholder="Name" style="float: right; width: 130px;">
+			<span style="display: block; float: left; font-size: 22px;">{{ $exam->book->title }}</span>
 			<div style="clear: both;"></div>
 		</div>
 		<div class="panel-body" style="padding: 0px;">
@@ -22,29 +20,37 @@
 
 					<div class="row">
 					@foreach($task->questions as $question)
-						@if($question->image_src != "")
-							<div class="col-xs-6 col-md-3 question" qid="{{ $question->id }}">
-								<a href="#" class="thumbnail">
+						<div class="question" qid="{{ $question->id }}">
+							@if ($question->image_src != "")
+								<a href="#" class="thumbnail" style="width: 200px; margin-left: 20px;">
 									<img src="{{ URL::asset($question->image_src) }}">
 								</a>
-								<input type="text" style="width: 100%;">
-							</div>
-						@else
-							<div class="question" style="padding-left: 30px;" qid="{{ $question->id }}">
-								<h5><strong>{{ $question->title }}</strong></h5>
-								@if($question->type == 0)
+							@else
+								<h5 style="margin-left: 20px;"><strong>{{ $question->title }}</strong></h5>
+							@endif
+							@if($question->type == 0)
+								@if(count($question->answers) == 2)
 									@foreach($question->answers as $answer)
-										<div class="checkbox" style="padding-left: 5px;">
-											<label>
-												<input type="checkbox" value="{{ $answer->title }}"> {{ $answer->title }}
+										<div class="checkbox" style="padding-left: 5px; margin-left: 20px;">
+											<label style="padding-left: 0px;">
+												<input type="radio" name="tf-{{ $question->id }}" value="{{ $answer->title }}"> {{ $answer->title }}
 											</label>
 										</div>
 									@endforeach
-								@elseif ($question->type == 1)
-									<input type="text" value="">
+								@else
+									@foreach($question->answers as $answer)
+										<div class="checkbox" style="padding-left: 5px; margin-left: 20px;">
+											<label>
+												<input type="radio" name="tf-{{ $question->id }}" value="{{ $answer->title }}"> {{ $answer->title }}
+												<!-- <input type="checkbox" value="{{ $answer->title }}"> {{ $answer->title }} -->
+											</label>
+										</div>
+									@endforeach
 								@endif
-							</div>
-						@endif
+							@elseif ($question->type == 1)
+								<input type="text" style="width: 100%;" value="">
+							@endif
+						</div>
 					@endforeach
 					</div>
 				</div>
@@ -60,7 +66,8 @@
 </div>
 
 <script>
-	$("#done").click(function() {
+	$("#done").click(function(e) {
+		e.preventDefault();
 		var exam_object = {};
 
 		$(".task").each(function(i, e) {
@@ -91,6 +98,7 @@
 
 		$("#id_input").val("{{ $id }}");
 		$("#exam_object_input").val(JSON.stringify(exam_object));
+		console.log($("#exam_object_input").val());
 		$("#submit-exam").submit();
 
 		{{--$.post( "{{ url('evaluate') }}", { exam_object: JSON.stringify(exam_object), id: "{{ $id }}", _token: "{{ csrf_token() }}" }).done(function( data ) {--}}

@@ -33,8 +33,9 @@
         <h3 style="margin-top: 0; margin-bottom: 25px;">{{ $exam->book->title  }} - {{ $exam->category->title }}</h3>
 
         @foreach($exam->resultsUser() as $result)
-            <span style="float: left; width: 100px; color: {{ $result->used ? $result->getResults()['score'] < 50 ? 'red' : 'green' : 'blue' }}">{{ $result->code }}</span>
-            <span style="float: left; width: 70px; color: {{ $result->used ? $result->getResults()['score'] < 50 ? 'red' : 'green' : 'blue' }}">{{ number_format($result->getResults()['score'], 1).'%' }}</span>
+            <span style="float: left; width: 100px; color: {{ $result->used ? $result->getResults()['questions_correct'] < $result->getResults()['questions_total'] / 2 ? 'red' : 'green' : 'blue' }}">{{ $result->code }}</span>
+            <span style="float: left; width: 180px; color: {{ $result->used ? $result->getResults()['questions_correct'] < $result->getResults()['questions_total'] / 2 ? 'red' : 'green' : 'blue' }}">{{ 'Pravilni/Nepravilni: '.$result->getResults()['questions_correct'].'/'.$result->getResults()['questions_total'] }}</span>
+            <span style="float: left;">{{ $result->name.' '.$result->surname }}</span>
             <!-- <a href="{{ url('admin/remove-code/'.$result->id)  }}" style="float: left; margin-left: 5px;">Remove</a> -->
             <!-- <a href="{{ url('admin/reset-code/'.$result->id)  }}" style="float: left; margin-left: 15px;">Reset</a> -->
             <div style="clear: left;"></div>
