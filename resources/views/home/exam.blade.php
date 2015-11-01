@@ -24,6 +24,7 @@
 							@if ($question->image_src != "")
 								<a href="#" class="thumbnail" style="width: 200px; margin-left: 20px;">
 									<img src="{{ URL::asset($question->image_src) }}">
+									<p style="font-size: 10px;">Copyright ©: 2015 Oxford University Press. All rights reserved.</p>
 								</a>
 							@else
 								<h5 style="margin-left: 20px;"><strong>{{ $question->title }}</strong></h5>
@@ -59,16 +60,18 @@
 				{!! csrf_field() !!}
 				<input type="hidden" name="exam_object" value="" id="exam_object_input">
 				<input type="hidden" name="id" value="" id="id_input">
-				<button id="done" class="btn btn-primary" style="width: 100%;">DONE</button>
+				<button id="done" class="btn btn-primary" style="width: 100%;">Oddaj test</button>
 			</form>
 		</div>
 	</div>
+	<p style="text-align: center;">Copyright ©: 2015, Mladinska knjiga, Center Oxford.</p>
 </div>
 
 <script>
 	$("#done").click(function(e) {
 		e.preventDefault();
 		var exam_object = {};
+		var submit_check = true;
 
 		$(".task").each(function(i, e) {
 			var task = $($(this).find('.title'));
@@ -82,23 +85,41 @@
 			$(questions).each(function(j, e2) {
 				var question_id = $(this).attr('qid');
 				var answers = $(this).find('input');
+				var was_answered = false;
 
 				exam_object[i]['questions'][j] = ({'question_id': question_id, 'answers': []});
 
 				$(answers).each(function(k, e3) {
 					var answer = $(this);
 					var answer_val = $(answer).val();
+
+					var check_radio = $(answer).is(':checked') && $(answer).attr('type') == 'radio';
+					var check_text = answer_val != "" && $(answer).attr('type') == 'text';
+
+					if (check_radio || check_text) {
+						was_answered = true;
+					}
+
 					if ($(answer).is(':checked') || $(answer).attr('type') == 'text') {
-						exam_object[i]['questions'][j]['answers'].push(answer_val)
-						console.log(answer_val);
+						exam_object[i]['questions'][j]['answers'].push(answer_val);
 					}
 				});
+
+				if (!was_answered) {
+					submit_check = false;
+				}
 			});
 		});
 
+		if (!submit_check) {
+			if (!confirm("Test vsebuje neodgovorjena vprašanja. Ga želite vseeno oddati?")) {
+				return false;
+			}
+		}
+
 		$("#id_input").val("{{ $id }}");
 		$("#exam_object_input").val(JSON.stringify(exam_object));
-		console.log($("#exam_object_input").val());
+		//console.log($("#exam_object_input").val());
 		$("#submit-exam").submit();
 
 		{{--$.post( "{{ url('evaluate') }}", { exam_object: JSON.stringify(exam_object), id: "{{ $id }}", _token: "{{ csrf_token() }}" }).done(function( data ) {--}}

@@ -6,10 +6,13 @@
     @include('admin.parts.messages')
 
     <div class="well" style="margin-top: 20px">
-        <h2>Dobrodošli v tekmovanje Bookworms</h2>
+        <h2 style="float: left;">Dobrodošli v tekmovanje Bookworms</h2>
+        <a href="{{ url('')  }}" class="btn btn-primary" style="float: right;">Odjava</a>
+        <div style="clear: both;"></div>
         <p><strong>Šola:</strong> {{ $mentor->school_name }}</p>
         <p><strong>Mentor:</strong> {{ $mentor->name.' '.$mentor->surname }}</p>
         <p><strong>Razred:</strong> {{ $category->title }}</p>
+        <p><strong>Učenec:</strong> {{ $result->name.' '.$result->surname }}</p>
 
         @if ($has_identified)
             <p>

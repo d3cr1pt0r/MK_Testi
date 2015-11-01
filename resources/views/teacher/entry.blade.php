@@ -43,13 +43,13 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-addon" style="min-width: 72px;">Geslo</div>
-                                <input type="text" class="form-control" name="password" required>
+                                <input type="password" class="form-control" name="password" required>
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-addon" style="min-width: 72px;">Geslo</div>
-                                <input type="text" class="form-control" name="password2" required>
+                                <input type="password" class="form-control" name="password2" required>
                             </div>
                         </div>
                         <div class="form-group">

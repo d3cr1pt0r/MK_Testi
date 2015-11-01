@@ -16,7 +16,7 @@
                 <input type="text" class="form-control" name="code">
             </div>
         </div>
-        <button type="submit" class="btn btn-primary" style="float: right; width: 8%;" id="code">Continue</button>
+        <button type="submit" class="btn btn-primary" style="float: right; width: 8%;" id="code">Nadaljuj</button>
         <div style="clear: both;"></div>
     </div>
 

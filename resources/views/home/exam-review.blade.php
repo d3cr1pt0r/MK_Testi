@@ -5,7 +5,7 @@
 
         @include('admin.parts.messages')
 
-        <a href="{{ url('code/'.$code) }}" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Back to exams</a>
+        <a href="{{ url('code/'.$code) }}" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Nazaj</a>
 
         <div class="panel panel-default" style="margin-top: 20px;">
             <div class="panel-heading">
@@ -50,13 +50,13 @@
                                                         @endif
                                                     @endforeach
                                                 @endif
-                                                <label style="color: {{ $correct ? 'green' : ($found ? 'red' : 'black') }}">
+                                                <label style="//color: {{ $correct ? 'green' : ($found ? 'red' : 'black') }}">
                                                     <input type="checkbox" disabled="disabled" {{ $found ? 'checked="checked"' : '' }} value="{{ $answer->title }}"> {{ $answer->title }}
                                                 </label>
                                             </div>
                                         @endforeach
                                     @elseif ($question->type == 1)
-                                        <input type="text" style="background-color: {{ in_array($question_results['question'][0]->answer, $question->answers_arr()) ? '#DEFFDE' : '#FFDDDD' }}" value="{{ $question_results['question'][0]->answer }}">
+                                        <input type="text" style="//background-color: {{ in_array($question_results['question'][0]->answer, $question->answers_arr()) ? '#DEFFDE' : '#FFDDDD' }}" value="{{ $question_results['question'][0]->answer }}">
                                     @endif
                                 </div>
                             @endforeach

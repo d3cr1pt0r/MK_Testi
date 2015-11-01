@@ -54,6 +54,7 @@ class HomeController extends Controller
         $view->mentor = $result->user;
         $view->category = $result->exam->category;
         $view->has_identified = $has_identified;
+        $view->result = $result;
 
         return $view;
     }

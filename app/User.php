@@ -1,5 +1,4 @@
 <?php
-
 namespace MKTests;
 
 use Illuminate\Auth\Authenticatable;
@@ -53,12 +52,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
         $map = [];
         foreach($this->results as $result) {
             $category_title = $result->exam->category->title;
+            $num_exams = count($result->exam->category->exams);
             if (!array_key_exists($category_title, $map)) {
-                $map[$category_title] = 0;
+                $map[$category_title] = ['num_codes' => 0, 'num_exams' => $num_exams];
             }
-            $map[$category_title]++;
+            $map[$category_title]['num_codes']++;
         }
 
         return $map;
+
     }
+
 }
+
