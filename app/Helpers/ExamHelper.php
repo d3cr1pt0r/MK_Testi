@@ -232,9 +232,9 @@ class ExamHelper
 
     static public function getExamResults2($result) {
         $results = [];
+        $dbg = [];
         $score_total = 0;
         $questions_total = count($result->exam->questions());
-
         $question_group = [];
 
         foreach($result->question_answers as $qa) {
@@ -244,9 +244,10 @@ class ExamHelper
 
         foreach($question_group as $question_id=>$question) {
             $q = Question::find($question_id);
-
+            $answer_text = $question[0]->answer;
+            $dbg[] = $answer_text;
             foreach($q->answers as $answer) {
-                if ($answer->title == $qa->answer) {
+                if ($answer->title == $answer_text && $answer->correct) {
                     $score_total++;
                     break;
                 }
@@ -254,7 +255,7 @@ class ExamHelper
 
             $results[$q->id] = ['question' => $question];
         }
-        //dd($results);
+        //dd($dbg);
         return ['results' => $results, 'questions_total' => $questions_total, 'questions_correct' => $score_total];
     }
 
