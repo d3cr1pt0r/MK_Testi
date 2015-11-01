@@ -29,6 +29,7 @@
                                     @if ($question->image_src != "")
                                         <a href="#" class="thumbnail" style="width: 200px">
                                             <img src="{{ URL::asset($question->image_src) }}">
+                                            <p style="font-size: 10px;">Copyright ©: 2015 Oxford University Press. All rights reserved.</p>
                                         </a>
                                     @else
                                         <h5><strong>{{ $question->title }}</strong></h5>
@@ -65,6 +66,7 @@
                 @endforeach
             </div>
         </div>
+        <p style="text-align: center;">Copyright ©: 2015, Mladinska knjiga, Center Oxford.</p>
     </div>
 
 @endsection
