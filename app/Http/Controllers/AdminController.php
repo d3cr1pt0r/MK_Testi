@@ -20,7 +20,7 @@ class AdminController extends Controller
 {
 
     public function __construct()
-    {
+    {        ini_set('memory_limit', '-1');
         $this->middleware('auth.admin', ['except' => ['getLogin', 'postLogin']]);
     }
 
