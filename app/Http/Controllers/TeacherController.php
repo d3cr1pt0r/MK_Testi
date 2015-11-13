@@ -10,6 +10,7 @@ use ExamHelper;
 use MKTests\Category;
 use MKTests\Exam;
 use MKTests\User;
+use MKTests\Result;
 use Illuminate\Support\Facades\Redirect;
 use MKTests\Http\Requests;
 use MKTests\Http\Controllers\Controller;
@@ -49,6 +50,13 @@ class TeacherController extends Controller
         $view = view('teacher.category');
         $view->category = $category;
 
+        return $view;
+    }
+
+    public function getResults() {
+        $view = view('teacher.results');
+        $results = Result::where('name', '!=', '')->get()->sortBy('name');
+        $view->results = $results;
         return $view;
     }
 
